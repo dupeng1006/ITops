@@ -31,38 +31,12 @@
         </el-option-group>
       </el-select>
 
-      <!-- 常用收藏：置顶展示 -->
-      <div v-if="favTables.length" class="fav-section">
-        <div class="fav-title">
-          <el-icon><Star /></el-icon>
-          <span>常用收藏</span>
-        </div>
-        <div class="fav-list">
-          <div
-            v-for="t in favTables"
-            :key="t.table_id"
-            class="table-item fav-item"
-            :class="{ active: currentTable && currentTable.id === t.table_id }"
-            @click="openTable(t.table_id)"
-          >
-            <div class="table-item-head">
-              <span class="table-code">{{ t.table_code }}</span>
-              <el-icon
-                class="fav-icon faved"
-                @click.stop="toggleFav({ id: t.table_id, table_code: t.table_code, table_name: t.table_name, is_favorite: true })"
-              ><Star /></el-icon>
-            </div>
-            <div class="table-name">{{ t.table_name || '—' }}</div>
-          </div>
-        </div>
-      </div>
-
       <div class="table-list" v-loading="loadingList">
         <div
-          v-for="t in tableItems"
+          v-for="t in sortedTableItems"
           :key="t.id"
           class="table-item"
-          :class="{ active: currentTable && currentTable.id === t.id }"
+          :class="{ active: currentTable && currentTable.id === t.id, 'fav-item': t.is_favorite }"
           @click="openTable(t.id)"
         >
           <div class="table-item-head">
@@ -266,7 +240,15 @@ const saveForm = ref({ name: '', ds_id: null })
 const datasources = ref([])
 
 const favs = ref([])
-const favTables = computed(() => favs.value)
+
+// 收藏表置顶排序（后端已置顶，前端再补一层保险，确保收藏始终在最前）
+const sortedTableItems = computed(() => {
+  return [...tableItems.value].sort((a, b) => {
+    const fa = a.is_favorite ? 0 : 1
+    const fb = b.is_favorite ? 0 : 1
+    return fa - fb
+  })
+})
 
 const modelGroups = computed(() => {
   const groups = {}
@@ -465,9 +447,6 @@ onMounted(async () => {
 .table-name { font-size: 12px; color: #606266; margin-top: 2px; }
 .table-meta { margin-top: 4px; display: flex; gap: 6px; align-items: center; }
 .biz-group { font-size: 12px; color: #909399; }
-.fav-section { border-bottom: 1px dashed #e4e7ed; padding-bottom: 8px; max-height: 200px; display: flex; flex-direction: column; }
-.fav-title { font-size: 13px; color: #e6a23c; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
-.fav-list { overflow-y: auto; }
 .fav-item { background: #fff9ed; border-color: #f5dab1; }
 .fav-item:hover { border-color: #e6a23c; }
 .fav-tag { margin: 0 6px 6px 0; cursor: pointer; }
