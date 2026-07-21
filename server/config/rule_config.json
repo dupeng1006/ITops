@@ -1,0 +1,46 @@
+{
+    "description": "O32 日常运维平台 M1 基金资产与净值核对规则配置（一期：JSON 文件承载；二期迁移数据库；v1.1.0 起特殊产品支持差异说明 note 与行填充色 color）",
+    "version": "1.1.0",
+    "source": "初始内容取自 samples/reference/fund_reconciler_config.json（验收基准配置）",
+
+    "rename_map": {
+        "7001": "6001",
+        "7002": "7001",
+        "AZ0001": "6101",
+        "AZ0003": "6103",
+        "AZ0004": "6104",
+        "AZ0006": "6106",
+        "AZ0007": "6107",
+        "AZ0008": "6108",
+        "AZ0010": "6110",
+        "AZ0011": "6111",
+        "AZ0012": "6112",
+        "AZ0015": "6115",
+        "AZ0016": "6116",
+        "AZ0017": "6117",
+        "AZ0018": "6118",
+        "AZ0019": "6119",
+        "AZ0020": "6120",
+        "AZ0022": "6122",
+        "AZ0023": "6123",
+        "AZ0024": "6124",
+        "AZ0026": "6126"
+    },
+
+    "special_products": [
+        {"code": "AZ0206", "note": null, "color": "FFC000"},
+        {"code": "AZ0205", "note": null, "color": "FFC000"},
+        {"code": "AZ0221", "note": null, "color": "FFC000"},
+        {"code": "AZ0230", "note": null, "color": "FFC000"},
+        {"code": "AZ0130", "note": null, "color": "FFC000"},
+        {"code": "AZ0160", "note": null, "color": "FFC000"},
+        {"code": "AZ0208", "note": null, "color": "FFC000"},
+        {"code": "AZ0236", "note": null, "color": "FFC000"},
+        {"code": "AZ0210", "note": null, "color": "FFC000"},
+        {"code": "AZ0151", "note": null, "color": "FFC000"},
+        {"code": "AZ0207", "note": null, "color": "FFC000"}
+    ],
+
+    "diff_threshold": 1.0,
+    "similarity_threshold": 0.5
+}

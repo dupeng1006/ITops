@@ -1,0 +1,6486 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "安联资管运维管理平台",
+    "description": "安联资管运维管理平台（恒生 O32 投资交易系统日常运维）：M1/M2/M3 核对 + 数据源管理 + 系统配置 + 任务调度中心 + 统计看板 + 数据字典 + 本地认证",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "认证"
+        ],
+        "summary": "用户登录",
+        "description": "校验用户名密码，签发 JWT（8 小时过期）；首登用户返回需改密标记",
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/change-password": {
+      "post": {
+        "tags": [
+          "认证"
+        ],
+        "summary": "修改密码（含首登强制改密）",
+        "description": "校验原密码后更新密码；首登用户改密后解除强制改密标志",
+        "operationId": "change_password_api_auth_change_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "tags": [
+          "用户维护"
+        ],
+        "summary": "用户列表",
+        "operationId": "list_users_api_admin_users_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Users Api Admin Users Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "用户维护"
+        ],
+        "summary": "新增用户",
+        "operationId": "create_user_api_admin_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/users/{user_id}": {
+      "put": {
+        "tags": [
+          "用户维护"
+        ],
+        "summary": "修改用户角色/状态",
+        "operationId": "update_user_api_admin_users__user_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "用户维护"
+        ],
+        "summary": "删除用户",
+        "operationId": "delete_user_api_admin_users__user_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users/{user_id}/reset-password": {
+      "post": {
+        "tags": [
+          "用户维护"
+        ],
+        "summary": "重置用户密码",
+        "operationId": "reset_password_api_admin_users__user_id__reset_password_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recon/m1/jobs": {
+      "post": {
+        "tags": [
+          "核对任务"
+        ],
+        "summary": "创建 M1 基金资产与净值核对任务（文件/数据库两种取数模式）",
+        "operationId": "create_m1_job_api_recon_m1_jobs_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_m1_job_api_recon_m1_jobs_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/recon/m2/jobs": {
+      "post": {
+        "tags": [
+          "核对任务"
+        ],
+        "summary": "创建 M2 基金估值价格核对任务（多产品批量，文件/数据库两种取数模式）",
+        "operationId": "create_m2_job_api_recon_m2_jobs_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_m2_job_api_recon_m2_jobs_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/recon/m3/jobs": {
+      "post": {
+        "tags": [
+          "核对任务"
+        ],
+        "summary": "创建 M3 基金属性表银行间ID匹配任务",
+        "operationId": "create_m3_job_api_recon_m3_jobs_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_m3_job_api_recon_m3_jobs_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/recon/jobs": {
+      "get": {
+        "tags": [
+          "核对任务"
+        ],
+        "summary": "核对任务历史查询",
+        "operationId": "list_jobs_api_recon_jobs_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "module",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "模块过滤，如 M1",
+              "title": "Module"
+            },
+            "description": "模块过滤，如 M1"
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "业务日期起 yyyyMMdd",
+              "title": "Date From"
+            },
+            "description": "业务日期起 yyyyMMdd"
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "业务日期止 yyyyMMdd",
+              "title": "Date To"
+            },
+            "description": "业务日期止 yyyyMMdd"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "状态过滤 pending/running/success/failed",
+              "title": "Status"
+            },
+            "description": "状态过滤 pending/running/success/failed"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recon/jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "核对任务"
+        ],
+        "summary": "核对任务详情（状态/进度/统计/日志）",
+        "operationId": "get_job_api_recon_jobs__job_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "log_tail",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 0,
+              "description": "返回日志末尾行数",
+              "default": 50,
+              "title": "Log Tail"
+            },
+            "description": "返回日志末尾行数"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recon/jobs/{job_id}/download": {
+      "get": {
+        "tags": [
+          "核对任务"
+        ],
+        "summary": "下载核对结果文件",
+        "operationId": "download_result_api_recon_jobs__job_id__download_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "file",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "M3 三件套选择: updated(更新表,默认) / detail(明细) / note(说明md)；M1/M2 任务忽略本参数",
+              "title": "File"
+            },
+            "description": "M3 三件套选择: updated(更新表,默认) / detail(明细) / note(说明md)；M1/M2 任务忽略本参数"
+          },
+          {
+            "name": "product",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "M2 按产品下载（如 6301）；缺省下载首个产品报告；其他模块忽略本参数",
+              "title": "Product"
+            },
+            "description": "M2 按产品下载（如 6301）；缺省下载首个产品报告；其他模块忽略本参数"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rules/mappings": {
+      "get": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "映射规则列表",
+        "operationId": "list_mappings_api_rules_mappings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MappingInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Mappings Api Rules Mappings Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "新增映射规则",
+        "operationId": "create_mapping_api_rules_mappings_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MappingCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MappingInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/rules/mappings/{mapping_id}": {
+      "put": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "修改映射规则",
+        "operationId": "update_mapping_api_rules_mappings__mapping_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "mapping_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Mapping Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MappingUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MappingInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "删除映射规则",
+        "operationId": "delete_mapping_api_rules_mappings__mapping_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "mapping_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Mapping Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rules/bulk-products": {
+      "get": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "特殊产品清单",
+        "operationId": "list_bulk_products_api_rules_bulk_products_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BulkProductInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Bulk Products Api Rules Bulk Products Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "新增特殊产品",
+        "operationId": "create_bulk_product_api_rules_bulk_products_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkProductCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkProductInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/rules/bulk-products/{bulk_id}": {
+      "put": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "修改特殊产品",
+        "operationId": "update_bulk_product_api_rules_bulk_products__bulk_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "bulk_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Bulk Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkProductUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkProductInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "删除特殊产品",
+        "operationId": "delete_bulk_product_api_rules_bulk_products__bulk_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "bulk_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Bulk Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rules/thresholds": {
+      "get": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "阈值参数列表",
+        "operationId": "list_thresholds_api_rules_thresholds_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ThresholdInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Thresholds Api Rules Thresholds Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/rules/thresholds/{param_key}": {
+      "put": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "修改阈值参数",
+        "operationId": "update_threshold_api_rules_thresholds__param_key__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Param Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThresholdUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThresholdInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rules/export": {
+      "get": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "导出规则配置（小程序 config JSON 同构）",
+        "operationId": "export_rules_api_rules_export_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/rules/import": {
+      "post": {
+        "tags": [
+          "规则配置"
+        ],
+        "summary": "导入规则配置（整体替换映射与特殊产品，单事务）",
+        "operationId": "import_rules_api_rules_import_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleImportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/datasources": {
+      "get": {
+        "tags": [
+          "数据源管理"
+        ],
+        "summary": "数据源列表",
+        "operationId": "list_datasources_api_datasources_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DatasourceInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Datasources Api Datasources Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "数据源管理"
+        ],
+        "summary": "新增数据源",
+        "operationId": "create_datasource_api_datasources_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatasourceCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasourceInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/datasources/{ds_id}": {
+      "put": {
+        "tags": [
+          "数据源管理"
+        ],
+        "summary": "修改数据源",
+        "operationId": "update_datasource_api_datasources__ds_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ds_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Ds Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatasourceUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasourceInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "数据源管理"
+        ],
+        "summary": "删除数据源",
+        "operationId": "delete_datasource_api_datasources__ds_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ds_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Ds Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/datasources/{ds_id}/test": {
+      "post": {
+        "tags": [
+          "数据源管理"
+        ],
+        "summary": "测试数据源连接",
+        "operationId": "test_datasource_api_datasources__ds_id__test_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ds_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Ds Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestConnectionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/query-templates": {
+      "get": {
+        "tags": [
+          "数据源管理"
+        ],
+        "summary": "查询模板列表",
+        "operationId": "list_templates_api_query_templates_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "module",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Module"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QueryTemplateInfo"
+                  },
+                  "title": "Response List Templates Api Query Templates Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "数据源管理"
+        ],
+        "summary": "新增查询模板",
+        "operationId": "create_template_api_query_templates_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryTemplateCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryTemplateInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/query-templates/{tpl_id}": {
+      "put": {
+        "tags": [
+          "数据源管理"
+        ],
+        "summary": "修改查询模板",
+        "operationId": "update_template_api_query_templates__tpl_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "tpl_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tpl Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryTemplateUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryTemplateInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "数据源管理"
+        ],
+        "summary": "删除查询模板",
+        "operationId": "delete_template_api_query_templates__tpl_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "tpl_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tpl Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/query-templates/{tpl_id}/preview": {
+      "post": {
+        "tags": [
+          "数据源管理"
+        ],
+        "summary": "预览查询模板（前 N 行）",
+        "operationId": "preview_template_api_query_templates__tpl_id__preview_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "tpl_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tpl Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplatePreviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplatePreviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/system/subject-price-rules": {
+      "get": {
+        "tags": [
+          "系统配置"
+        ],
+        "summary": "科目取价规则列表",
+        "operationId": "list_rules_api_admin_system_subject_price_rules_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SubjectPriceRuleInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Rules Api Admin System Subject Price Rules Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "系统配置"
+        ],
+        "summary": "新增科目取价规则",
+        "operationId": "create_rule_api_admin_system_subject_price_rules_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubjectPriceRuleCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectPriceRuleInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/system/subject-price-rules/{rule_id}": {
+      "put": {
+        "tags": [
+          "系统配置"
+        ],
+        "summary": "修改科目取价规则",
+        "operationId": "update_rule_api_admin_system_subject_price_rules__rule_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Rule Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubjectPriceRuleUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectPriceRuleInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "系统配置"
+        ],
+        "summary": "删除科目取价规则",
+        "operationId": "delete_rule_api_admin_system_subject_price_rules__rule_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Rule Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/system/params": {
+      "get": {
+        "tags": [
+          "系统配置"
+        ],
+        "summary": "系统参数列表",
+        "operationId": "list_params_api_admin_system_params_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SystemParamInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Params Api Admin System Params Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "系统配置"
+        ],
+        "summary": "批量修改系统参数（admin）",
+        "operationId": "update_params_api_admin_system_params_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemParamsUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SystemParamInfo"
+                  },
+                  "type": "array",
+                  "title": "Response Update Params Api Admin System Params Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/schedule/jobs": {
+      "get": {
+        "tags": [
+          "任务调度中心"
+        ],
+        "summary": "定时任务列表",
+        "operationId": "list_jobs_api_schedule_jobs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ScheduleJobInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Jobs Api Schedule Jobs Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "任务调度中心"
+        ],
+        "summary": "新建定时任务",
+        "operationId": "create_job_api_schedule_jobs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleJobCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleJobInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/schedule/jobs/{job_id}": {
+      "put": {
+        "tags": [
+          "任务调度中心"
+        ],
+        "summary": "修改定时任务",
+        "operationId": "update_job_api_schedule_jobs__job_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleJobUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleJobInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "任务调度中心"
+        ],
+        "summary": "删除定时任务",
+        "operationId": "delete_job_api_schedule_jobs__job_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/schedule/jobs/{job_id}/toggle": {
+      "post": {
+        "tags": [
+          "任务调度中心"
+        ],
+        "summary": "启停切换",
+        "operationId": "toggle_job_api_schedule_jobs__job_id__toggle_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleJobInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/schedule/jobs/{job_id}/run-now": {
+      "post": {
+        "tags": [
+          "任务调度中心"
+        ],
+        "summary": "立即执行一次",
+        "operationId": "run_now_api_schedule_jobs__job_id__run_now_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/schedule/executions": {
+      "get": {
+        "tags": [
+          "任务调度中心"
+        ],
+        "summary": "定时执行历史",
+        "operationId": "list_executions_api_schedule_executions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "schedule_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "按定时任务过滤（可选）",
+              "title": "Schedule Id"
+            },
+            "description": "按定时任务过滤（可选）"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "description": "返回条数上限",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "返回条数上限"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScheduleExecutionInfo"
+                  },
+                  "title": "Response List Executions Api Schedule Executions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/diff-trend": {
+      "get": {
+        "tags": [
+          "统计看板"
+        ],
+        "summary": "M1 差异趋势（按业务日期）",
+        "operationId": "diff_trend_api_dashboard_diff_trend_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "description": "回溯天数",
+              "default": 30,
+              "title": "Days"
+            },
+            "description": "回溯天数"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiffTrendResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/persistent-diff": {
+      "get": {
+        "tags": [
+          "统计看板"
+        ],
+        "summary": "持续差异产品清单（recon_job_item 明细）",
+        "operationId": "persistent_diff_api_dashboard_persistent_diff_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 90,
+              "minimum": 1,
+              "description": "回溯天数",
+              "default": 7,
+              "title": "Days"
+            },
+            "description": "回溯天数"
+          },
+          {
+            "name": "min_times",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "最少出现次数",
+              "default": 2,
+              "title": "Min Times"
+            },
+            "description": "最少出现次数"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersistentDiffResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/health": {
+      "get": {
+        "tags": [
+          "统计看板"
+        ],
+        "summary": "定时任务健康度",
+        "operationId": "health_api_dashboard_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardHealthResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/dict/models": {
+      "get": {
+        "tags": [
+          "数据字典查询"
+        ],
+        "summary": "字典模型清单",
+        "operationId": "list_models_api_dict_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DictModelInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Models Api Dict Models Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/dict/tables": {
+      "get": {
+        "tags": [
+          "数据字典查询"
+        ],
+        "summary": "搜索表（表代码/中文名/字段名模糊，收藏优先置顶）",
+        "operationId": "search_tables_api_dict_tables_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 50,
+              "default": "",
+              "title": "Keyword"
+            }
+          },
+          {
+            "name": "model_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Model Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictTableSearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dict/tables/{table_id}": {
+      "get": {
+        "tags": [
+          "数据字典查询"
+        ],
+        "summary": "表详情（全字段 + 主键标识）",
+        "operationId": "table_detail_api_dict_tables__table_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "table_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Table Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictTableDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dict/tables/{table_id}/references": {
+      "get": {
+        "tags": [
+          "数据字典查询"
+        ],
+        "summary": "表关联（父子两向）",
+        "operationId": "table_references_api_dict_tables__table_id__references_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "table_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Table Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictTableReferencesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dict/favorites": {
+      "get": {
+        "tags": [
+          "数据字典查询"
+        ],
+        "summary": "当前用户收藏的字典表",
+        "operationId": "list_favorites_api_dict_favorites_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DictFavoriteInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Favorites Api Dict Favorites Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "数据字典查询"
+        ],
+        "summary": "收藏字典表",
+        "operationId": "add_favorite_api_dict_favorites_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DictFavoriteCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictFavoriteInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/dict/favorites/{table_id}": {
+      "delete": {
+        "tags": [
+          "数据字典查询"
+        ],
+        "summary": "取消收藏字典表",
+        "operationId": "remove_favorite_api_dict_favorites__table_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "table_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Table Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dict/gen-sql": {
+      "post": {
+        "tags": [
+          "数据字典查询"
+        ],
+        "summary": "生成 Oracle SELECT（多表按外键自动 JOIN）",
+        "operationId": "gen_sql_api_dict_gen_sql_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenSqlRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenSqlResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/dict/save-template": {
+      "post": {
+        "tags": [
+          "数据字典查询"
+        ],
+        "summary": "生成的 SQL 保存为查询模板（模块=custom）",
+        "operationId": "save_template_api_dict_save_template_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DictSaveTemplateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryTemplateInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": [
+          "系统"
+        ],
+        "summary": "健康检查",
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_create_m1_job_api_recon_m1_jobs_post": {
+        "properties": {
+          "fund_file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fund File",
+            "description": "基金资产表 (.xls/.xlsx)，fetch_mode=file 时必填"
+          },
+          "netvalue_file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Netvalue File",
+            "description": "净值查询表 (.xls/.xlsx)，fetch_mode=file 时必填"
+          },
+          "fetch_mode": {
+            "type": "string",
+            "title": "Fetch Mode",
+            "description": "取数模式: file(默认,上传文件) / db(数据库查询)",
+            "default": "file"
+          },
+          "fund_template_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fund Template Id",
+            "description": "db 模式：基金资产查询模板ID（模块 m1_fund）"
+          },
+          "netvalue_template_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Netvalue Template Id",
+            "description": "db 模式：净值查询模板ID（模块 m1_netvalue）"
+          },
+          "biz_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Biz Date",
+            "description": "业务日期 yyyyMMdd；file 模式默认当天，db 模式必填"
+          }
+        },
+        "type": "object",
+        "title": "Body_create_m1_job_api_recon_m1_jobs_post"
+      },
+      "Body_create_m2_job_api_recon_m2_jobs_post": {
+        "properties": {
+          "system_files": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "contentMediaType": "application/octet-stream"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Files",
+            "description": "系统端 新综合信息查询_基金证券（多文件），fetch_mode=file 时必填"
+          },
+          "valuation_files": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "contentMediaType": "application/octet-stream"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valuation Files",
+            "description": "财务端 证券投资基金估值表（多文件），fetch_mode=file 时必填"
+          },
+          "fetch_mode": {
+            "type": "string",
+            "title": "Fetch Mode",
+            "description": "取数模式: file(默认,上传文件) / db(数据库查询)",
+            "default": "file"
+          },
+          "groups_json": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Groups Json",
+            "description": "db 模式：模板分组 JSON，如 [{\"product\":\"6301\",\"system_template_id\":1,\"valuation_template_id\":2}]"
+          },
+          "biz_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Biz Date",
+            "description": "业务日期 yyyyMMdd；file 模式默认当天，db 模式必填"
+          }
+        },
+        "type": "object",
+        "title": "Body_create_m2_job_api_recon_m2_jobs_post"
+      },
+      "Body_create_m3_job_api_recon_m3_jobs_post": {
+        "properties": {
+          "fund_file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Fund File",
+            "description": "基金属性表 (.xls/.xlsx)"
+          },
+          "member_file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Member File",
+            "description": "交易成员基本信息表 (.csv, GBK 编码)"
+          },
+          "biz_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Biz Date",
+            "description": "业务日期 yyyyMMdd，默认当天"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fund_file",
+          "member_file"
+        ],
+        "title": "Body_create_m3_job_api_recon_m3_jobs_post"
+      },
+      "BulkProductCreateRequest": {
+        "properties": {
+          "product_code": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Product Code",
+            "description": "特殊产品代码"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "差异说明（空=默认文案）"
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color",
+            "description": "行填充色(6位HEX，不含#)，缺省 FFC000"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "是否启用",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_code"
+        ],
+        "title": "BulkProductCreateRequest"
+      },
+      "BulkProductInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "product_code": {
+            "type": "string",
+            "title": "Product Code"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "差异说明（M1 结果'差异原因'列；空=默认文案）"
+          },
+          "color": {
+            "type": "string",
+            "title": "Color",
+            "description": "行填充色(6位HEX，不含#)",
+            "default": "FFC000"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "product_code",
+          "enabled",
+          "updated_at"
+        ],
+        "title": "BulkProductInfo"
+      },
+      "BulkProductUpdateRequest": {
+        "properties": {
+          "product_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Code",
+            "description": "特殊产品代码"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "差异说明（传空字符串清空）"
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color",
+            "description": "行填充色(6位HEX，不含#)"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled",
+            "description": "是否启用"
+          }
+        },
+        "type": "object",
+        "title": "BulkProductUpdateRequest"
+      },
+      "ChangePasswordRequest": {
+        "properties": {
+          "old_password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Old Password",
+            "description": "原密码"
+          },
+          "new_password": {
+            "type": "string",
+            "maxLength": 72,
+            "minLength": 8,
+            "title": "New Password",
+            "description": "新密码（至少8位）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "old_password",
+          "new_password"
+        ],
+        "title": "ChangePasswordRequest"
+      },
+      "DashboardHealthResponse": {
+        "properties": {
+          "schedule_total": {
+            "type": "integer",
+            "title": "Schedule Total"
+          },
+          "schedule_enabled": {
+            "type": "integer",
+            "title": "Schedule Enabled"
+          },
+          "last30d": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Last30D",
+            "description": "近 30 天 scheduled 任务按状态计数（success/failed/wait_file 等）"
+          },
+          "recent": {
+            "items": {
+              "$ref": "#/components/schemas/ScheduleExecutionInfo"
+            },
+            "type": "array",
+            "title": "Recent",
+            "description": "最近 10 次定时执行"
+          },
+          "data_ready_time": {
+            "type": "string",
+            "title": "Data Ready Time"
+          },
+          "buffer_minutes": {
+            "type": "string",
+            "title": "Buffer Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "schedule_total",
+          "schedule_enabled",
+          "data_ready_time",
+          "buffer_minutes"
+        ],
+        "title": "DashboardHealthResponse"
+      },
+      "DatasourceCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "description": "数据源名称（唯一）"
+          },
+          "db_type": {
+            "type": "string",
+            "title": "Db Type",
+            "description": "类型: oracle/mariadb/mysql/mssql/postgresql"
+          },
+          "host": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Host",
+            "description": "主机"
+          },
+          "port": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 65535.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Port",
+            "description": "端口（缺省按类型取默认）"
+          },
+          "db_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Db Name",
+            "description": "库名（Oracle 以外必填）"
+          },
+          "service_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Name",
+            "description": "Oracle 服务名（与 SID 二选一）"
+          },
+          "sid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sid",
+            "description": "Oracle SID（与服务名二选一）"
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Username",
+            "description": "账号"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Password",
+            "description": "密码（服务端加密存储）"
+          },
+          "extra": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra",
+            "description": "连接参数 JSON（预留）"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "是否启用",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "db_type",
+          "username",
+          "password"
+        ],
+        "title": "DatasourceCreateRequest"
+      },
+      "DatasourceInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "db_type": {
+            "type": "string",
+            "title": "Db Type"
+          },
+          "host": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Host"
+          },
+          "port": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Port"
+          },
+          "db_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Db Name"
+          },
+          "service_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Name"
+          },
+          "sid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sid"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "description": "密码掩码（恒定 ********，无明文）"
+          },
+          "extra": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "db_type",
+          "username",
+          "password",
+          "enabled",
+          "updated_at"
+        ],
+        "title": "DatasourceInfo",
+        "description": "数据源视图（永不包含密码明文，password 恒为掩码）"
+      },
+      "DatasourceUpdateRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "数据源名称"
+          },
+          "db_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Db Type",
+            "description": "类型"
+          },
+          "host": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Host",
+            "description": "主机"
+          },
+          "port": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 65535.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Port",
+            "description": "端口"
+          },
+          "db_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Db Name",
+            "description": "库名"
+          },
+          "service_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Name",
+            "description": "Oracle 服务名"
+          },
+          "sid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sid",
+            "description": "Oracle SID"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username",
+            "description": "账号"
+          },
+          "password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password",
+            "description": "密码；留空/null 表示不修改"
+          },
+          "extra": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra",
+            "description": "连接参数 JSON（预留）"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled",
+            "description": "是否启用"
+          }
+        },
+        "type": "object",
+        "title": "DatasourceUpdateRequest"
+      },
+      "DictColumnInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "col_code": {
+            "type": "string",
+            "title": "Col Code"
+          },
+          "col_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Col Name"
+          },
+          "data_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Type"
+          },
+          "is_pk": {
+            "type": "integer",
+            "title": "Is Pk"
+          },
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "col_code",
+          "is_pk",
+          "seq"
+        ],
+        "title": "DictColumnInfo"
+      },
+      "DictFavoriteCreateRequest": {
+        "properties": {
+          "table_id": {
+            "type": "integer",
+            "title": "Table Id",
+            "description": "字典表 ID"
+          },
+          "table_code": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Table Code",
+            "description": "表代码"
+          },
+          "table_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table Name",
+            "description": "表中文名"
+          }
+        },
+        "type": "object",
+        "required": [
+          "table_id",
+          "table_code"
+        ],
+        "title": "DictFavoriteCreateRequest"
+      },
+      "DictFavoriteInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "table_id": {
+            "type": "integer",
+            "title": "Table Id"
+          },
+          "table_code": {
+            "type": "string",
+            "title": "Table Code"
+          },
+          "table_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "table_id",
+          "table_code",
+          "created_at"
+        ],
+        "title": "DictFavoriteInfo"
+      },
+      "DictMatchedColumn": {
+        "properties": {
+          "col_code": {
+            "type": "string",
+            "title": "Col Code"
+          },
+          "col_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Col Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "col_code"
+        ],
+        "title": "DictMatchedColumn"
+      },
+      "DictModelInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "biz_group": {
+            "type": "string",
+            "title": "Biz Group"
+          },
+          "table_count": {
+            "type": "integer",
+            "title": "Table Count"
+          },
+          "column_count": {
+            "type": "integer",
+            "title": "Column Count"
+          },
+          "imported_at": {
+            "type": "string",
+            "title": "Imported At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "file_name",
+          "model_name",
+          "biz_group",
+          "table_count",
+          "column_count",
+          "imported_at"
+        ],
+        "title": "DictModelInfo"
+      },
+      "DictReferenceItem": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "ref_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Name"
+          },
+          "other_id": {
+            "type": "integer",
+            "title": "Other Id"
+          },
+          "other_code": {
+            "type": "string",
+            "title": "Other Code"
+          },
+          "other_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Other Name"
+          },
+          "other_biz_group": {
+            "type": "string",
+            "title": "Other Biz Group"
+          },
+          "joins": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Joins"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "other_id",
+          "other_code",
+          "other_biz_group",
+          "joins"
+        ],
+        "title": "DictReferenceItem"
+      },
+      "DictSaveTemplateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "description": "模板名称（唯一）"
+          },
+          "ds_id": {
+            "type": "integer",
+            "title": "Ds Id",
+            "description": "数据源 ID"
+          },
+          "sql_text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Sql Text",
+            "description": "生成的 SQL（仅单条 SELECT/WITH）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "ds_id",
+          "sql_text"
+        ],
+        "title": "DictSaveTemplateRequest"
+      },
+      "DictTableDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "model_id": {
+            "type": "integer",
+            "title": "Model Id"
+          },
+          "table_code": {
+            "type": "string",
+            "title": "Table Code"
+          },
+          "table_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table Name"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "biz_group": {
+            "type": "string",
+            "title": "Biz Group"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/DictColumnInfo"
+            },
+            "type": "array",
+            "title": "Columns"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "model_id",
+          "table_code",
+          "biz_group",
+          "file_name",
+          "model_name",
+          "columns"
+        ],
+        "title": "DictTableDetail"
+      },
+      "DictTableItem": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "model_id": {
+            "type": "integer",
+            "title": "Model Id"
+          },
+          "table_code": {
+            "type": "string",
+            "title": "Table Code"
+          },
+          "table_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table Name"
+          },
+          "biz_group": {
+            "type": "string",
+            "title": "Biz Group"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "matched_on": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched On",
+            "description": "命中点: table_code/table_name/column"
+          },
+          "matched_columns": {
+            "items": {
+              "$ref": "#/components/schemas/DictMatchedColumn"
+            },
+            "type": "array",
+            "title": "Matched Columns"
+          },
+          "is_favorite": {
+            "type": "boolean",
+            "title": "Is Favorite",
+            "description": "当前用户是否收藏",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "model_id",
+          "table_code",
+          "biz_group",
+          "file_name"
+        ],
+        "title": "DictTableItem"
+      },
+      "DictTableReferencesResponse": {
+        "properties": {
+          "as_parent": {
+            "items": {
+              "$ref": "#/components/schemas/DictReferenceItem"
+            },
+            "type": "array",
+            "title": "As Parent",
+            "description": "本表为父表（被引用的子表列表）"
+          },
+          "as_child": {
+            "items": {
+              "$ref": "#/components/schemas/DictReferenceItem"
+            },
+            "type": "array",
+            "title": "As Child",
+            "description": "本表为子表（引用的父表列表）"
+          }
+        },
+        "type": "object",
+        "title": "DictTableReferencesResponse"
+      },
+      "DictTableSearchResponse": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DictTableItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "page",
+          "page_size",
+          "items"
+        ],
+        "title": "DictTableSearchResponse"
+      },
+      "DiffTrendPoint": {
+        "properties": {
+          "biz_date": {
+            "type": "string",
+            "title": "Biz Date"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "default": 0
+          },
+          "exact": {
+            "type": "integer",
+            "title": "Exact",
+            "default": 0
+          },
+          "fuzzy": {
+            "type": "integer",
+            "title": "Fuzzy",
+            "default": 0
+          },
+          "unmatched": {
+            "type": "integer",
+            "title": "Unmatched",
+            "default": 0
+          },
+          "bulk": {
+            "type": "integer",
+            "title": "Bulk",
+            "default": 0
+          },
+          "diff": {
+            "type": "integer",
+            "title": "Diff",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "biz_date"
+        ],
+        "title": "DiffTrendPoint"
+      },
+      "DiffTrendResponse": {
+        "properties": {
+          "days": {
+            "type": "integer",
+            "title": "Days"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/DiffTrendPoint"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "days",
+          "points"
+        ],
+        "title": "DiffTrendResponse"
+      },
+      "GenSqlCondition": {
+        "properties": {
+          "table_alias": {
+            "type": "string",
+            "title": "Table Alias",
+            "description": "表别名"
+          },
+          "column": {
+            "type": "string",
+            "title": "Column",
+            "description": "字段代码"
+          },
+          "op": {
+            "type": "string",
+            "title": "Op",
+            "description": "运算符: =,!=,>,>=,<,<=,LIKE,IN,BETWEEN,IS NULL,IS NOT NULL"
+          },
+          "value": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value",
+            "description": "条件值（IN 逗号分隔，BETWEEN 两个值）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "table_alias",
+          "column",
+          "op"
+        ],
+        "title": "GenSqlCondition"
+      },
+      "GenSqlRequest": {
+        "properties": {
+          "tables": {
+            "items": {
+              "$ref": "#/components/schemas/GenSqlTableSpec"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Tables"
+          },
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/GenSqlCondition"
+            },
+            "type": "array",
+            "title": "Conditions"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "description": "ROWNUM 行数限制",
+            "default": 500
+          },
+          "use_rownum": {
+            "type": "boolean",
+            "title": "Use Rownum",
+            "description": "是否附加 ROWNUM 限制",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "tables"
+        ],
+        "title": "GenSqlRequest"
+      },
+      "GenSqlResponse": {
+        "properties": {
+          "sql": {
+            "type": "string",
+            "title": "Sql"
+          },
+          "joins": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Joins",
+            "description": "自动 JOIN 说明"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "description": "无关联等警告"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sql"
+        ],
+        "title": "GenSqlResponse"
+      },
+      "GenSqlTableSpec": {
+        "properties": {
+          "table_id": {
+            "type": "integer",
+            "title": "Table Id",
+            "description": "字典表 ID"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Columns",
+            "description": "勾选字段代码（空 = 全部字段）"
+          },
+          "alias": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alias",
+            "description": "表别名（默认 t1..tn）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "table_id"
+        ],
+        "title": "GenSqlTableSpec"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "JobCreateResponse": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "status",
+          "message"
+        ],
+        "title": "JobCreateResponse"
+      },
+      "JobDetailResponse": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "biz_date": {
+            "type": "string",
+            "title": "Biz Date"
+          },
+          "fetch_mode": {
+            "type": "string",
+            "title": "Fetch Mode"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "trigger_type": {
+            "type": "string",
+            "title": "Trigger Type"
+          },
+          "progress": {
+            "type": "integer",
+            "title": "Progress"
+          },
+          "stats": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stats"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "result_filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Filename"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "log_tail": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Log Tail",
+            "description": "运行日志末尾N行"
+          },
+          "result_files": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Result Files",
+            "description": "结果文件清单（如 M3 三件套）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "module",
+          "biz_date",
+          "fetch_mode",
+          "status",
+          "trigger_type",
+          "progress",
+          "created_by",
+          "created_at"
+        ],
+        "title": "JobDetailResponse"
+      },
+      "JobInfo": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "biz_date": {
+            "type": "string",
+            "title": "Biz Date"
+          },
+          "fetch_mode": {
+            "type": "string",
+            "title": "Fetch Mode"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "trigger_type": {
+            "type": "string",
+            "title": "Trigger Type"
+          },
+          "progress": {
+            "type": "integer",
+            "title": "Progress"
+          },
+          "stats": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stats"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "result_filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Filename"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "module",
+          "biz_date",
+          "fetch_mode",
+          "status",
+          "trigger_type",
+          "progress",
+          "created_by",
+          "created_at"
+        ],
+        "title": "JobInfo"
+      },
+      "JobListResponse": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/JobInfo"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "page",
+          "page_size",
+          "items"
+        ],
+        "title": "JobListResponse"
+      },
+      "LoginRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Username",
+            "description": "用户编号"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password",
+            "description": "密码"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "LoginResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "must_change_password": {
+            "type": "boolean",
+            "title": "Must Change Password",
+            "description": "是否首次登录需强制改密"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name",
+            "description": "用户姓名（未设置为空）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "must_change_password",
+          "username",
+          "role"
+        ],
+        "title": "LoginResponse"
+      },
+      "MappingCreateRequest": {
+        "properties": {
+          "source_code": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Source Code",
+            "description": "原代码（净值查询表侧）"
+          },
+          "target_code": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Target Code",
+            "description": "映射后代码（基金资产表侧）"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "是否启用",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_code",
+          "target_code"
+        ],
+        "title": "MappingCreateRequest"
+      },
+      "MappingInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "source_code": {
+            "type": "string",
+            "title": "Source Code"
+          },
+          "target_code": {
+            "type": "string",
+            "title": "Target Code"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source_code",
+          "target_code",
+          "enabled",
+          "updated_at"
+        ],
+        "title": "MappingInfo"
+      },
+      "MappingUpdateRequest": {
+        "properties": {
+          "source_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Code",
+            "description": "原代码"
+          },
+          "target_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Code",
+            "description": "映射后代码"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled",
+            "description": "是否启用"
+          }
+        },
+        "type": "object",
+        "title": "MappingUpdateRequest"
+      },
+      "PersistentDiffItem": {
+        "properties": {
+          "product_code": {
+            "type": "string",
+            "title": "Product Code"
+          },
+          "product_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Name"
+          },
+          "times": {
+            "type": "integer",
+            "title": "Times"
+          },
+          "last_diff_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Diff Pct"
+          },
+          "max_diff_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Diff Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_code",
+          "times"
+        ],
+        "title": "PersistentDiffItem"
+      },
+      "PersistentDiffResponse": {
+        "properties": {
+          "days": {
+            "type": "integer",
+            "title": "Days"
+          },
+          "min_times": {
+            "type": "integer",
+            "title": "Min Times"
+          },
+          "threshold_pct": {
+            "type": "number",
+            "title": "Threshold Pct"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PersistentDiffItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "days",
+          "min_times",
+          "threshold_pct",
+          "items"
+        ],
+        "title": "PersistentDiffResponse"
+      },
+      "QueryTemplateCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "description": "模板名称（唯一）"
+          },
+          "module": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Module",
+            "description": "所属模块: m1_fund/m1_netvalue/m2_system/m2_valuation/m3_member 等"
+          },
+          "ds_id": {
+            "type": "integer",
+            "title": "Ds Id",
+            "description": "数据源 ID"
+          },
+          "sql_text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Sql Text",
+            "description": "查询 SQL（仅单条 SELECT/WITH）"
+          },
+          "column_map": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Column Map",
+            "description": "结果列→标准逻辑字段映射"
+          },
+          "params_def": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Params Def",
+            "description": "参数定义（如 biz_date）"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "是否启用",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "module",
+          "ds_id",
+          "sql_text"
+        ],
+        "title": "QueryTemplateCreateRequest"
+      },
+      "QueryTemplateInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "ds_id": {
+            "type": "integer",
+            "title": "Ds Id"
+          },
+          "ds_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ds Name"
+          },
+          "sql_text": {
+            "type": "string",
+            "title": "Sql Text"
+          },
+          "column_map": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Column Map"
+          },
+          "params_def": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Params Def"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "module",
+          "ds_id",
+          "sql_text",
+          "enabled",
+          "updated_at"
+        ],
+        "title": "QueryTemplateInfo"
+      },
+      "QueryTemplateUpdateRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "模板名称"
+          },
+          "module": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Module",
+            "description": "所属模块"
+          },
+          "ds_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ds Id",
+            "description": "数据源 ID"
+          },
+          "sql_text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sql Text",
+            "description": "查询 SQL（仅单条 SELECT/WITH）"
+          },
+          "column_map": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Column Map",
+            "description": "结果列→标准逻辑字段映射"
+          },
+          "params_def": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Params Def",
+            "description": "参数定义"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled",
+            "description": "是否启用"
+          }
+        },
+        "type": "object",
+        "title": "QueryTemplateUpdateRequest"
+      },
+      "ResetPasswordRequest": {
+        "properties": {
+          "new_password": {
+            "type": "string",
+            "maxLength": 72,
+            "minLength": 8,
+            "title": "New Password",
+            "description": "新密码（至少8位）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "new_password"
+        ],
+        "title": "ResetPasswordRequest"
+      },
+      "RuleImportRequest": {
+        "properties": {
+          "rename_map": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Rename Map",
+            "description": "信托计划代码映射（整体替换）"
+          },
+          "bulk_products": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bulk Products",
+            "description": "特殊产品代码清单（旧格式，整体替换）"
+          },
+          "special_products": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/SpecialProductItem"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Special Products",
+            "description": "特殊产品对象数组（新格式，优先采用）"
+          },
+          "diff_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diff Threshold",
+            "description": "差异阈值(%)，提供时同步更新 diff_pct"
+          },
+          "similarity_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Similarity Threshold",
+            "description": "模糊匹配相似度阈值，提供时同步更新 fuzzy_sim"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rename_map"
+        ],
+        "title": "RuleImportRequest",
+        "description": "规则配置导入体（兼容新旧格式：special_products 优先，缺省回退 bulk_products）"
+      },
+      "RuleImportResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "mappings_before": {
+            "type": "integer",
+            "title": "Mappings Before"
+          },
+          "mappings_after": {
+            "type": "integer",
+            "title": "Mappings After"
+          },
+          "bulk_before": {
+            "type": "integer",
+            "title": "Bulk Before"
+          },
+          "bulk_after": {
+            "type": "integer",
+            "title": "Bulk After"
+          },
+          "thresholds_updated": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Thresholds Updated",
+            "description": "本次同步更新的阈值键"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "mappings_before",
+          "mappings_after",
+          "bulk_before",
+          "bulk_after"
+        ],
+        "title": "RuleImportResponse"
+      },
+      "ScheduleExecutionInfo": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "biz_date": {
+            "type": "string",
+            "title": "Biz Date"
+          },
+          "fetch_mode": {
+            "type": "string",
+            "title": "Fetch Mode"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "stats": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stats"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "module",
+          "biz_date",
+          "fetch_mode",
+          "status",
+          "created_by",
+          "created_at"
+        ],
+        "title": "ScheduleExecutionInfo",
+        "description": "定时执行历史（复用 recon_job，trigger_type=schedule）"
+      },
+      "ScheduleJobCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "description": "任务名称"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module",
+            "description": "模块: m1/m2"
+          },
+          "fetch_mode": {
+            "type": "string",
+            "title": "Fetch Mode",
+            "description": "取数模式: file/db",
+            "default": "file"
+          },
+          "fund_template_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fund Template Id",
+            "description": "M1 db：基金资产查询模板ID"
+          },
+          "netvalue_template_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Netvalue Template Id",
+            "description": "M1 db：净值查询模板ID"
+          },
+          "groups_json": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Groups Json",
+            "description": "M2 db：模板分组JSON"
+          },
+          "file_dir": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Dir",
+            "description": "file 模式：文件就绪监测目录"
+          },
+          "cron_expr": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Cron Expr",
+            "description": "cron 表达式（5 段：分 时 日 月 周，如 7 18 * * 1-5）"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "是否启用",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "module",
+          "cron_expr"
+        ],
+        "title": "ScheduleJobCreateRequest"
+      },
+      "ScheduleJobInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "fetch_mode": {
+            "type": "string",
+            "title": "Fetch Mode"
+          },
+          "fund_template_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fund Template Id"
+          },
+          "netvalue_template_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Netvalue Template Id"
+          },
+          "groups_json": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Groups Json"
+          },
+          "file_dir": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Dir"
+          },
+          "cron_expr": {
+            "type": "string",
+            "title": "Cron Expr"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "last_run_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Run At"
+          },
+          "last_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Status"
+          },
+          "last_job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Job Id"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "module",
+          "fetch_mode",
+          "cron_expr",
+          "enabled",
+          "created_by",
+          "created_at"
+        ],
+        "title": "ScheduleJobInfo"
+      },
+      "ScheduleJobUpdateRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "任务名称"
+          },
+          "module": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Module",
+            "description": "模块: m1/m2"
+          },
+          "fetch_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fetch Mode",
+            "description": "取数模式: file/db"
+          },
+          "fund_template_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fund Template Id",
+            "description": "M1 db：基金资产查询模板ID"
+          },
+          "netvalue_template_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Netvalue Template Id",
+            "description": "M1 db：净值查询模板ID"
+          },
+          "groups_json": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Groups Json",
+            "description": "M2 db：模板分组JSON"
+          },
+          "file_dir": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Dir",
+            "description": "file 模式：文件就绪监测目录"
+          },
+          "cron_expr": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cron Expr",
+            "description": "cron 表达式"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled",
+            "description": "是否启用"
+          }
+        },
+        "type": "object",
+        "title": "ScheduleJobUpdateRequest"
+      },
+      "SpecialProductItem": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Code",
+            "description": "产品代码"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "差异说明（空=默认文案）"
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color",
+            "description": "行填充色(6位HEX，不含#)，缺省 FFC000"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "SpecialProductItem",
+        "description": "特殊产品条目（导入导出 JSON 新格式）"
+      },
+      "SubjectPriceRuleCreateRequest": {
+        "properties": {
+          "subject_prefix": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Subject Prefix",
+            "description": "科目前缀（如 1101/1501）"
+          },
+          "price_field": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Price Field",
+            "description": "取价字段（估值表列名，如 市价/单位成本）"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "科目说明（如 交易性金融资产）"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "口径提示语（报告备注用，可空）"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "是否启用",
+            "default": true
+          },
+          "sort_order": {
+            "type": "integer",
+            "maximum": 9999.0,
+            "minimum": 0.0,
+            "title": "Sort Order",
+            "description": "排序号（小者先提取）",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "subject_prefix",
+          "price_field"
+        ],
+        "title": "SubjectPriceRuleCreateRequest"
+      },
+      "SubjectPriceRuleInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "subject_prefix": {
+            "type": "string",
+            "title": "Subject Prefix"
+          },
+          "price_field": {
+            "type": "string",
+            "title": "Price Field"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "sort_order": {
+            "type": "integer",
+            "title": "Sort Order"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "subject_prefix",
+          "price_field",
+          "enabled",
+          "sort_order",
+          "updated_at"
+        ],
+        "title": "SubjectPriceRuleInfo"
+      },
+      "SubjectPriceRuleUpdateRequest": {
+        "properties": {
+          "subject_prefix": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Prefix",
+            "description": "科目前缀"
+          },
+          "price_field": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Field",
+            "description": "取价字段"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "科目说明"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "口径提示语"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled",
+            "description": "是否启用"
+          },
+          "sort_order": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 9999.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort Order",
+            "description": "排序号"
+          }
+        },
+        "type": "object",
+        "title": "SubjectPriceRuleUpdateRequest"
+      },
+      "SystemParamInfo": {
+        "properties": {
+          "param_key": {
+            "type": "string",
+            "title": "Param Key"
+          },
+          "param_value": {
+            "type": "string",
+            "title": "Param Value"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "param_key",
+          "param_value",
+          "updated_at"
+        ],
+        "title": "SystemParamInfo"
+      },
+      "SystemParamsUpdateRequest": {
+        "properties": {
+          "values": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Values",
+            "description": "参数键值对（仅允许已登记的系统参数键）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "values"
+        ],
+        "title": "SystemParamsUpdateRequest"
+      },
+      "TemplatePreviewRequest": {
+        "properties": {
+          "params": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Params",
+            "description": "模板参数值（如 biz_date）"
+          }
+        },
+        "type": "object",
+        "title": "TemplatePreviewRequest"
+      },
+      "TemplatePreviewResponse": {
+        "properties": {
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Columns"
+          },
+          "rows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "rows_returned": {
+            "type": "integer",
+            "title": "Rows Returned",
+            "description": "本次返回行数（预览截断后）"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "title": "Elapsed Ms"
+          },
+          "protections": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Protections",
+            "description": "实际生效的执行保护"
+          }
+        },
+        "type": "object",
+        "required": [
+          "columns",
+          "rows",
+          "rows_returned",
+          "elapsed_ms"
+        ],
+        "title": "TemplatePreviewResponse"
+      },
+      "TestConnectionResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "elapsed_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elapsed Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
+        "title": "TestConnectionResponse"
+      },
+      "ThresholdInfo": {
+        "properties": {
+          "param_key": {
+            "type": "string",
+            "title": "Param Key"
+          },
+          "param_value": {
+            "type": "string",
+            "title": "Param Value"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "param_key",
+          "param_value",
+          "updated_at"
+        ],
+        "title": "ThresholdInfo"
+      },
+      "ThresholdUpdateRequest": {
+        "properties": {
+          "value": {
+            "type": "number",
+            "title": "Value",
+            "description": "阈值数值（合法范围随参数键而定，详见接口文档）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value"
+        ],
+        "title": "ThresholdUpdateRequest"
+      },
+      "UserCreateRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2,
+            "title": "Username",
+            "description": "用户编号（登录用）"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 72,
+            "minLength": 8,
+            "title": "Password",
+            "description": "初始密码（至少8位，首次登录需修改）"
+          },
+          "role": {
+            "type": "string",
+            "pattern": "^(admin|operator|viewer)$",
+            "title": "Role",
+            "description": "角色: admin/operator/viewer"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name",
+            "description": "用户姓名（选填）"
+          },
+          "department": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department",
+            "description": "部门（选填）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password",
+          "role"
+        ],
+        "title": "UserCreateRequest"
+      },
+      "UserInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "department": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "must_change_password": {
+            "type": "boolean",
+            "title": "Must Change Password"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "role",
+          "status",
+          "source",
+          "must_change_password",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "UserInfo"
+      },
+      "UserUpdateRequest": {
+        "properties": {
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(admin|operator|viewer)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role",
+            "description": "角色"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(active|disabled)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status",
+            "description": "状态"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name",
+            "description": "用户姓名（传空字符串清空）"
+          },
+          "department": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department",
+            "description": "部门（传空字符串清空）"
+          }
+        },
+        "type": "object",
+        "title": "UserUpdateRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "description": "JWT 访问令牌",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

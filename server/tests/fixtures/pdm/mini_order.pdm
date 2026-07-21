@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?PowerDesigner AppLocale="UTF16" ID="{TESTMINI-0000-0000-0000-000000000001}" Name="迷你测试模型" signature="PDM_DATA_MODEL_XML" version="16.5.0.0"?>
+<!-- 测试 fixture：模拟 PowerDesigner 15/16 XML 结构（3 表 + 1 外键） -->
+<Model xmlns:a="attribute" xmlns:c="collection" xmlns:o="object">
+<o:RootObject Id="o1">
+<c:Children>
+<o:Model Id="o2">
+<a:ObjectID>TESTMINI-0000-0000-0000-000000000001</a:ObjectID>
+<a:Name>迷你测试模型</a:Name>
+<a:Code>MINI</a:Code>
+<c:Packages>
+<o:Package Id="o10">
+<a:Name>订单域</a:Name>
+<a:Code>ORDER_DOMAIN</a:Code>
+<c:Tables>
+<o:Table Id="o100">
+<a:ObjectID>TESTMINI-T001</a:ObjectID>
+<a:Name>订单表</a:Name>
+<a:Code>TORDER</a:Code>
+<a:Comment>订单主表（测试用）</a:Comment>
+<c:Columns>
+<o:Column Id="o101">
+<a:Name>订单序号</a:Name>
+<a:Code>l_order_id</a:Code>
+<a:DataType>NUMBER(12)</a:DataType>
+<a:Comment>主键</a:Comment>
+</o:Column>
+<o:Column Id="o102">
+<a:Name>订单编号</a:Name>
+<a:Code>vc_order_no</a:Code>
+<a:DataType>VARCHAR2(30)</a:DataType>
+</o:Column>
+<o:Column Id="o103">
+<a:Name>订单日期</a:Name>
+<a:Code>d_order_date</a:Code>
+<a:DataType>DATE</a:DataType>
+</o:Column>
+<o:Column Id="o104">
+<a:Name>订单金额</a:Name>
+<a:Code>en_amount</a:Code>
+<a:DataType>NUMBER(16,2)</a:DataType>
+</o:Column>
+<o:Column Id="o105">
+<a:Name>订单状态</a:Name>
+<a:Code>vc_status</a:Code>
+<a:DataType>VARCHAR2(4)</a:DataType>
+</o:Column>
+</c:Columns>
+<c:Keys>
+<o:Key Id="o190">
+<a:Name>PK_TORDER</a:Name>
+<a:Code>PK_TORDER</a:Code>
+<c:Key.Columns>
+<o:Column Ref="o101"/>
+</c:Key.Columns>
+</o:Key>
+</c:Keys>
+<c:PrimaryKey>
+<o:Key Ref="o190"/>
+</c:PrimaryKey>
+</o:Table>
+<o:Table Id="o200">
+<a:ObjectID>TESTMINI-T002</a:ObjectID>
+<a:Name>订单明细表</a:Name>
+<a:Code>TORDERDETAIL</a:Code>
+<c:Columns>
+<o:Column Id="o201">
+<a:Name>明细序号</a:Name>
+<a:Code>l_id</a:Code>
+<a:DataType>NUMBER(12)</a:DataType>
+</o:Column>
+<o:Column Id="o202">
+<a:Name>订单序号</a:Name>
+<a:Code>l_order_id</a:Code>
+<a:DataType>NUMBER(12)</a:DataType>
+</o:Column>
+<o:Column Id="o203">
+<a:Name>产品代码</a:Name>
+<a:Code>vc_product_code</a:Code>
+<a:DataType>VARCHAR2(20)</a:DataType>
+</o:Column>
+<o:Column Id="o204">
+<a:Name>数量</a:Name>
+<a:Code>en_qty</a:Code>
+<a:DataType>NUMBER(12,4)</a:DataType>
+</o:Column>
+</c:Columns>
+<c:Keys>
+<o:Key Id="o290">
+<a:Name>PK_TORDERDETAIL</a:Name>
+<a:Code>PK_TORDERDETAIL</a:Code>
+<c:Key.Columns>
+<o:Column Ref="o201"/>
+</c:Key.Columns>
+</o:Key>
+</c:Keys>
+<c:PrimaryKey>
+<o:Key Ref="o290"/>
+</c:PrimaryKey>
+</o:Table>
+</c:Tables>
+</o:Package>
+</c:Packages>
+<c:Tables>
+<o:Table Id="o300">
+<a:ObjectID>TESTMINI-T003</a:ObjectID>
+<a:Name>产品表</a:Name>
+<a:Code>TPRODUCT</a:Code>
+<a:Comment>无外键关联的独立表（测试 CROSS 警告）</a:Comment>
+<c:Columns>
+<o:Column Id="o301">
+<a:Name>产品代码</a:Name>
+<a:Code>vc_product_code</a:Code>
+<a:DataType>VARCHAR2(20)</a:DataType>
+</o:Column>
+<o:Column Id="o302">
+<a:Name>产品名称</a:Name>
+<a:Code>vc_product_name</a:Code>
+<a:DataType>VARCHAR2(100)</a:DataType>
+</o:Column>
+</c:Columns>
+<c:Keys>
+<o:Key Id="o390">
+<a:Name>PK_TPRODUCT</a:Name>
+<a:Code>PK_TPRODUCT</a:Code>
+<c:Key.Columns>
+<o:Column Ref="o301"/>
+</c:Key.Columns>
+</o:Key>
+</c:Keys>
+<c:PrimaryKey>
+<o:Key Ref="o390"/>
+</c:PrimaryKey>
+</o:Table>
+<o:Table Id="o400">
+<a:ObjectID>TESTMINI-T004</a:ObjectID>
+<a:Name>订单支付表</a:Name>
+<a:Code>TORDERPAY</a:Code>
+<a:Comment>关联无 Joins、经 ParentKey 同名主键列推导（测试 fallback）</a:Comment>
+<c:Columns>
+<o:Column Id="o401">
+<a:Name>支付序号</a:Name>
+<a:Code>l_pay_id</a:Code>
+<a:DataType>NUMBER(12)</a:DataType>
+</o:Column>
+<o:Column Id="o402">
+<a:Name>订单序号</a:Name>
+<a:Code>l_order_id</a:Code>
+<a:DataType>NUMBER(12)</a:DataType>
+</o:Column>
+<o:Column Id="o403">
+<a:Name>支付金额</a:Name>
+<a:Code>en_pay_amount</a:Code>
+<a:DataType>NUMBER(16,2)</a:DataType>
+</o:Column>
+</c:Columns>
+<c:Keys>
+<o:Key Id="o490">
+<a:Name>PK_TORDERPAY</a:Name>
+<a:Code>PK_TORDERPAY</a:Code>
+<c:Key.Columns>
+<o:Column Ref="o401"/>
+</c:Key.Columns>
+</o:Key>
+</c:Keys>
+<c:PrimaryKey>
+<o:Key Ref="o490"/>
+</c:PrimaryKey>
+</o:Table>
+</c:Tables>
+<c:References>
+<o:Reference Id="o900">
+<a:ObjectID>TESTMINI-R001</a:ObjectID>
+<a:Name>FK_DETAIL_ORDER</a:Name>
+<a:Code>FK_DETAIL_ORDER</a:Code>
+<a:ForeignKeyConstraintName>FK_DETAIL_ORDER</a:ForeignKeyConstraintName>
+<c:ParentTable>
+<o:Table Ref="o100"/>
+</c:ParentTable>
+<c:ChildTable>
+<o:Table Ref="o200"/>
+</c:ChildTable>
+<c:ParentKey>
+<o:Key Ref="o190"/>
+</c:ParentKey>
+<c:Joins>
+<o:ReferenceJoin Id="o901">
+<a:ObjectID>TESTMINI-RJ01</a:ObjectID>
+<c:Object1>
+<o:Column Ref="o101"/>
+</c:Object1>
+<c:Object2>
+<o:Column Ref="o202"/>
+</c:Object2>
+</o:ReferenceJoin>
+</c:Joins>
+</o:Reference>
+<o:Reference Id="o910">
+<a:ObjectID>TESTMINI-R002</a:ObjectID>
+<a:Name>FK_PAY_ORDER</a:Name>
+<a:Code>FK_PAY_ORDER</a:Code>
+<a:ForeignKeyConstraintName>FK_PAY_ORDER</a:ForeignKeyConstraintName>
+<c:ParentTable>
+<o:Table Ref="o100"/>
+</c:ParentTable>
+<c:ChildTable>
+<o:Table Ref="o400"/>
+</c:ChildTable>
+<c:ParentKey>
+<o:Key Ref="o190"/>
+</c:ParentKey>
+</o:Reference>
+</c:References>
+</o:Model>
+</c:Children>
+</o:RootObject>
+</Model>

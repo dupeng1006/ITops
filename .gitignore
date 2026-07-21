@@ -1,0 +1,24 @@
+# 虚拟环境与密钥
+server/.venv/
+server/.env
+
+# 运行时数据与归档（不入仓）
+server/data/
+server/archive/
+
+# 测试产物
+server/tests/golden/actual/
+server/tests/golden/**/actual/
+
+# PyInstaller 构建中间产物与打包产物（不入仓）
+server/build/
+server/dist/
+package/
+
+# 前端依赖与构建产物（不入仓）
+client/node_modules/
+client/dist/
+
+# Python 缓存
+__pycache__/
+*.pyc
