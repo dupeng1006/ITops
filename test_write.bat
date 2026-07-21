@@ -1,13 +1,12 @@
 @echo off
 chcp 936 >NUL
 rem ============================================================
-rem  安联资管运维管理平台 - 停止前台服务
+rem  test
 rem ============================================================
-cd /d %~dp0
-taskkill /IM o32-server.exe /F >NUL
+echo hello >NUL
+taskkill /IM notepad.exe /F >NUL
 if %ERRORLEVEL% EQU 0 (
-    echo 已停止 o32-server.exe
+    echo stopped
 ) else (
-    echo 未找到运行中的 o32-server.exe，或已停止
+    echo not running
 )
-pause
