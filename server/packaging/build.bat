@@ -59,6 +59,13 @@ echo [5/6] 生成 版本.txt 与 依赖清单.txt ...
 if %ERRORLEVEL% NEQ 0 goto :error
 
 echo [6/6] 压缩 zip ...
+rem 清除可能因测试启动产生的运行时文件（o32ops.db/secret.key/server.log 等）
+rem 确保交付包不含测试数据，用户首启时自动生成干净库
+if exist "%PKGDIR%\data\o32ops.db" del /f /q "%PKGDIR%\data\o32ops.db" >nul 2>&1
+if exist "%PKGDIR%\data\o32ops.db-shm" del /f /q "%PKGDIR%\data\o32ops.db-shm" >nul 2>&1
+if exist "%PKGDIR%\data\o32ops.db-wal" del /f /q "%PKGDIR%\data\o32ops.db-wal" >nul 2>&1
+if exist "%PKGDIR%\data\secret.key" del /f /q "%PKGDIR%\data\secret.key" >nul 2>&1
+if exist "%PKGDIR%\logs\server.log" del /f /q "%PKGDIR%\logs\server.log" >nul 2>&1
 rem PowerShell 兜底：PATH 中无 powershell 时使用系统全路径
 set "PSHELL=powershell"
 where powershell >nul 2>nul || set "PSHELL=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"

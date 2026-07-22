@@ -104,6 +104,13 @@ if exist "%OLD_DIR%\data\dictionary.db" (
     )
 )
 
+rem 清除新版本可能残留的测试数据库和密钥（打包测试时可能生成）
+rem 确保从旧版本迁移真实数据，避免 robocopy 因目标文件较新而跳过
+if exist "data\o32ops.db" del /f /q "data\o32ops.db" >nul 2>&1
+if exist "data\o32ops.db-shm" del /f /q "data\o32ops.db-shm" >nul 2>&1
+if exist "data\o32ops.db-wal" del /f /q "data\o32ops.db-wal" >nul 2>&1
+if exist "data\secret.key" del /f /q "data\secret.key" >nul 2>&1
+
 echo [1/3] 迁移数据目录 data（平台库/密钥/规则/模板/字典库）...
 robocopy "%OLD_DIR%\data" "data" /E /COPY:DAT /R:2 /W:2 /NFL /NDL /NJH
 if %ERRORLEVEL% GEQ 8 goto :error
