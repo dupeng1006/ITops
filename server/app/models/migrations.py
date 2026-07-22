@@ -18,6 +18,9 @@ O32 日常运维平台 —— 轻量 schema 迁移机制
              激活 description 列为"差异说明"语义（NULL = 默认文案，
              保证 M1 结果与升级前一字不差）。
     v2 → v3: sys_user 增加 display_name（用户姓名）、department（部门）两列。
+    v3 → v4: 新增 dict_favorite（数据字典表收藏）。
+    v4 → v5: sys_audit_log 增加 mac（来源 MAC，服务端 ARP 解析）、
+             menu（操作菜单）两列（存量日志该两列为 NULL，无损）。
 
 作者：技术部
 版本：1.0.0
@@ -106,11 +109,27 @@ def _migrate_v4(engine: Engine) -> None:
             logger.info("迁移 v4: dict_favorite 表已存在，跳过")
 
 
+def _migrate_v5(engine: Engine) -> None:
+    """v4 → v5：sys_audit_log 增加 mac / menu 两列（可空，存量无损）"""
+    columns = _table_columns(engine, "sys_audit_log")
+    with engine.begin() as conn:
+        for col, ddl in (
+            ("mac", "ALTER TABLE sys_audit_log ADD COLUMN mac VARCHAR(20)"),
+            ("menu", "ALTER TABLE sys_audit_log ADD COLUMN menu VARCHAR(100)"),
+        ):
+            if col not in columns:
+                conn.execute(text(ddl))
+                logger.info(f"迁移 v5: sys_audit_log 已增加 {col} 列")
+            else:
+                logger.info(f"迁移 v5: {col} 列已存在，跳过（幂等）")
+
+
 # 有序迁移列表（version 严格递增，禁止插序/改序）
 SCHEMA_MIGRATIONS: List[Migration] = [
     (2, "rule_bulk_product 增加 color 列并清理历史占位说明", _migrate_v2),
     (3, "sys_user 增加 display_name / department 两列", _migrate_v3),
     (4, "新增 dict_favorite 数据字典表收藏", _migrate_v4),
+    (5, "sys_audit_log 增加 mac / menu 两列", _migrate_v5),
 ]
 
 

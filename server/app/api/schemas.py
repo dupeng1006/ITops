@@ -579,3 +579,27 @@ class DictFavoriteCreateRequest(BaseModel):
     table_id: int = Field(..., description="字典表 ID")
     table_code: str = Field(..., min_length=1, max_length=100, description="表代码")
     table_name: Optional[str] = Field(None, max_length=200, description="表中文名")
+
+
+# =============================================================================
+# 系统日志查询（审计）
+# =============================================================================
+
+class AuditLogInfo(BaseModel):
+    id: int
+    time: str = Field(..., description="操作时间 YYYY-MM-DD HH:MM:SS")
+    username: str = Field(..., description="用户编号")
+    display_name: Optional[str] = Field(None, description="用户姓名")
+    department: Optional[str] = Field(None, description="部门")
+    ip: Optional[str] = Field(None, description="来源 IP")
+    mac: Optional[str] = Field(None, description="来源 MAC（同网段解析，跨网段为空）")
+    menu: Optional[str] = Field(None, description="操作菜单")
+    action: str = Field(..., description="操作类型")
+    detail: Optional[str] = Field(None, description="操作明细")
+
+
+class AuditLogListResponse(BaseModel):
+    total: int
+    page: int
+    page_size: int
+    items: List[AuditLogInfo]

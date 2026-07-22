@@ -36,6 +36,7 @@
           <template #title><el-icon><Setting /></el-icon><span>系统管理</span></template>
           <el-menu-item index="/system/config">系统配置</el-menu-item>
           <el-menu-item index="/users">用户维护</el-menu-item>
+          <el-menu-item index="/audit-logs">系统日志查询</el-menu-item>
         </el-sub-menu>
       </el-menu>
     </el-aside>

@@ -67,6 +67,9 @@ from app.services.audit_service import record_audit
 
 logger = logging.getLogger(__name__)
 
+MENU_DS = "数据源管理 · 连接配置"
+MENU_TPL = "数据源管理 · 查询模板"
+
 router = APIRouter(tags=["数据源管理"])
 
 # 所属模块取值（页面下拉；预留扩展，新增模块零代码）
@@ -250,8 +253,7 @@ def create_datasource(
     db.add(row)
     db.flush()
     record_audit(db, user.username, "ds_create", "ds_connection", str(row.id),
-                 f"新增数据源 {name}（{DB_TYPE_LABELS[db_type]} {body.host or ''}）",
-                 _client_ip(request))
+                 f"新增数据源 {name}（{DB_TYPE_LABELS[db_type]} {body.host or ''}）", _client_ip(request), menu=MENU_DS)
     db.commit()
     return _to_ds_info(row)
 
@@ -316,7 +318,7 @@ def update_datasource(
 
     row.updated_by = user.username
     record_audit(db, user.username, "ds_update", "ds_connection", str(row.id),
-                 f"修改数据源 id={row.id}: " + "；".join(changes), _client_ip(request))
+                 f"修改数据源 id={row.id}: " + "；".join(changes), _client_ip(request), menu=MENU_DS)
     db.commit()
     return _to_ds_info(row)
 
@@ -340,7 +342,7 @@ def delete_datasource(
     detail = f"删除数据源 {row.name}（{DB_TYPE_LABELS.get(row.db_type, row.db_type)} {row.host or ''}）"
     db.delete(row)
     record_audit(db, user.username, "ds_delete", "ds_connection", str(ds_id),
-                 detail, _client_ip(request))
+                 detail, _client_ip(request), menu=MENU_DS)
     db.commit()
     return {"message": f"已删除数据源 id={ds_id}"}
 
@@ -359,11 +361,11 @@ def test_datasource(
         result = test_connection(spec)
     except DatasourceError as e:
         record_audit(db, user.username, "ds_test", "ds_connection", str(ds_id),
-                     f"测试连接 {row.name}: 失败（{e}）", _client_ip(request))
+                     f"测试连接 {row.name}: 失败（{e}）", _client_ip(request), menu=MENU_DS)
         db.commit()
         return TestConnectionResponse(success=False, message=str(e))
     record_audit(db, user.username, "ds_test", "ds_connection", str(ds_id),
-                 f"测试连接 {row.name}: 成功（{result.elapsed_ms}ms）", _client_ip(request))
+                 f"测试连接 {row.name}: 成功（{result.elapsed_ms}ms）", _client_ip(request), menu=MENU_DS)
     db.commit()
     return TestConnectionResponse(
         success=True,
@@ -410,8 +412,7 @@ def create_template(
     db.add(row)
     db.flush()
     record_audit(db, user.username, "tpl_create", "ds_query_template", str(row.id),
-                 f"新增查询模板 {name}（模块 {row.module}，数据源 id={row.ds_id}）",
-                 _client_ip(request))
+                 f"新增查询模板 {name}（模块 {row.module}，数据源 id={row.ds_id}）", _client_ip(request), menu=MENU_DS)
     db.commit()
     return _to_tpl_info(db, row)
 
@@ -463,7 +464,7 @@ def update_template(
 
     row.updated_by = user.username
     record_audit(db, user.username, "tpl_update", "ds_query_template", str(row.id),
-                 f"修改查询模板 id={row.id}: " + "；".join(changes), _client_ip(request))
+                 f"修改查询模板 id={row.id}: " + "；".join(changes), _client_ip(request), menu=MENU_TPL)
     db.commit()
     return _to_tpl_info(db, row)
 
@@ -479,7 +480,7 @@ def delete_template(
     detail = f"删除查询模板 {row.name}（模块 {row.module}）"
     db.delete(row)
     record_audit(db, user.username, "tpl_delete", "ds_query_template", str(tpl_id),
-                 detail, _client_ip(request))
+                 detail, _client_ip(request), menu=MENU_TPL)
     db.commit()
     return {"message": f"已删除查询模板 id={tpl_id}"}
 
@@ -517,13 +518,12 @@ def preview_template(
         result = execute_query(spec, row.sql_text, bound, column_map, context)
     except DatasourceError as e:
         record_audit(db, user.username, "tpl_preview", "ds_query_template", str(tpl_id),
-                     f"预览 {row.name}: 失败（{e}）", _client_ip(request))
+                     f"预览 {row.name}: 失败（{e}）", _client_ip(request), menu=MENU_TPL)
         db.commit()
         raise HTTPException(status_code=400, detail=str(e))
 
     record_audit(db, user.username, "tpl_preview", "ds_query_template", str(tpl_id),
-                 f"预览 {row.name}: 返回 {result.rows_returned} 行（{result.elapsed_ms}ms）",
-                 _client_ip(request))
+                 f"预览 {row.name}: 返回 {result.rows_returned} 行（{result.elapsed_ms}ms）", _client_ip(request), menu=MENU_DS)
     db.commit()
 
     # DataFrame → 前端可序列化结构（NaN/NaT 转 None，日期转字符串）

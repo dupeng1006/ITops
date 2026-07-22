@@ -56,6 +56,8 @@ class SysAuditLog(Base):
     object_id: Mapped[str] = mapped_column(String(64), nullable=True, comment="操作对象标识")
     detail: Mapped[str] = mapped_column(Text, nullable=True, comment="操作明细")
     ip: Mapped[str] = mapped_column(String(50), nullable=True, comment="来源IP")
+    mac: Mapped[str] = mapped_column(String(20), nullable=True, comment="来源MAC（服务端ARP解析，同网段可获取）")
+    menu: Mapped[str] = mapped_column(String(100), nullable=True, comment="操作菜单（如 数据核对中心·M1）")
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
 
 

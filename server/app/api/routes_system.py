@@ -36,6 +36,9 @@ from app.services.audit_service import record_audit
 
 logger = logging.getLogger(__name__)
 
+MENU_SUBJ = "系统管理 · 系统配置 · 科目取价规则"
+MENU_PARAM = "系统管理 · 系统配置 · 系统参数"
+
 router = APIRouter(prefix="/api/admin/system", tags=["系统配置"])
 
 
@@ -102,8 +105,7 @@ def create_rule(
     db.flush()
     record_audit(db, user.username, "sys_subject_rule_create", "sys_subject_price_rule",
                  str(row.id),
-                 f"新增科目取价规则 {prefix}→{field}（{'启用' if body.enabled else '停用'}，排序 {body.sort_order}）",
-                 _client_ip(request))
+                 f"新增科目取价规则 {prefix}→{field}（{'启用' if body.enabled else '停用'}，排序 {body.sort_order}）", _client_ip(request), menu=MENU_SUBJ)
     db.commit()
     return _to_info(row)
 
@@ -153,8 +155,7 @@ def update_rule(
 
     row.updated_by = user.username
     record_audit(db, user.username, "sys_subject_rule_update", "sys_subject_price_rule",
-                 str(row.id), f"修改科目取价规则 id={row.id}: " + "；".join(changes),
-                 _client_ip(request))
+                 str(row.id), f"修改科目取价规则 id={row.id}: " + "；".join(changes), _client_ip(request), menu=MENU_SUBJ)
     db.commit()
     return _to_info(row)
 
@@ -174,7 +175,7 @@ def delete_rule(
               f"（{'启用' if row.enabled else '停用'}）")
     db.delete(row)
     record_audit(db, user.username, "sys_subject_rule_delete", "sys_subject_price_rule",
-                 str(rule_id), detail, _client_ip(request))
+                 str(rule_id), detail, _client_ip(request), menu=MENU_SUBJ)
     db.commit()
     return {"message": f"已删除科目取价规则 id={rule_id}"}
 
@@ -245,6 +246,6 @@ def update_params(
             row.updated_by = user.username
     if changes:
         record_audit(db, user.username, "sys_params_update", "sys_config", None,
-                     "修改系统参数: " + "；".join(changes), _client_ip(request))
+                     "修改系统参数: " + "；".join(changes), _client_ip(request), menu=MENU_SUBJ)
     db.commit()
     return list_params(user=user, db=db)

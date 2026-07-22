@@ -45,6 +45,8 @@ from app.services.audit_service import record_audit
 
 logger = logging.getLogger(__name__)
 
+MENU_SCH = "任务调度中心"
+
 router = APIRouter(prefix="/api/schedule", tags=["任务调度中心"])
 
 
@@ -142,8 +144,7 @@ def create_job(
     db.flush()
     record_audit(db, user.username, "schedule_create", "schedule_job", str(sj.id),
                  f"新建定时任务「{sj.name}」：模块={cfg['module']}，取数={cfg['fetch_mode']}，"
-                 f"cron={cfg['cron_expr']}，{'启用' if sj.enabled else '停用'}",
-                 _client_ip(request))
+                 f"cron={cfg['cron_expr']}，{'启用' if sj.enabled else '停用'}", _client_ip(request), menu=MENU_SCH)
     db.commit()
     # 先提交库内写事务再同步调度器（APScheduler jobstore 独立连接，避免 SQLite 写锁冲突）
     schedule_service.sync_schedule(sj)
@@ -189,8 +190,7 @@ def update_job(
 
     if changes:
         record_audit(db, user.username, "schedule_update", "schedule_job", str(sj.id),
-                     f"修改定时任务「{sj.name}」(id={sj.id}): " + "；".join(changes),
-                     _client_ip(request))
+                     f"修改定时任务「{sj.name}」(id={sj.id}): " + "；".join(changes), _client_ip(request), menu=MENU_SCH)
     db.commit()
     # 先提交库内写事务再同步调度器（避免 SQLite 写锁冲突）
     schedule_service.sync_schedule(sj)
@@ -207,8 +207,7 @@ def delete_job(
         raise HTTPException(status_code=404, detail=f"定时任务不存在: id={job_id}")
     detail = f"删除定时任务「{sj.name}」(id={sj.id}，模块={sj.module}，cron={sj.cron_expr})"
     db.delete(sj)
-    record_audit(db, user.username, "schedule_delete", "schedule_job", str(job_id), detail,
-                 _client_ip(request))
+    record_audit(db, user.username, "schedule_delete", "schedule_job", str(job_id), detail, _client_ip(request), menu=MENU_SCH)
     db.commit()
     # 先提交库内写事务再移除调度器作业（避免 SQLite 写锁冲突）
     schedule_service.remove_schedule(job_id)
@@ -227,8 +226,7 @@ def toggle_job(
         raise HTTPException(status_code=404, detail=f"定时任务不存在: id={job_id}")
     sj.enabled = not sj.enabled
     record_audit(db, user.username, "schedule_toggle", "schedule_job", str(sj.id),
-                 f"定时任务「{sj.name}」(id={sj.id}) {'启用' if sj.enabled else '停用'}",
-                 _client_ip(request))
+                 f"定时任务「{sj.name}」(id={sj.id}) {'启用' if sj.enabled else '停用'}", _client_ip(request), menu=MENU_SCH)
     db.commit()
     # 先提交库内写事务再同步调度器（避免 SQLite 写锁冲突）
     schedule_service.sync_schedule(sj)
@@ -249,7 +247,7 @@ def run_now(
         target=schedule_service.execute_schedule_job, args=(sj.id, 1, None), daemon=True,
     ).start()
     record_audit(db, user.username, "schedule_run_now", "schedule_job", str(sj.id),
-                 f"手动立即执行定时任务「{sj.name}」(id={sj.id})", _client_ip(request))
+                 f"手动立即执行定时任务「{sj.name}」(id={sj.id})", _client_ip(request), menu=MENU_SCH)
     db.commit()
     return {"message": f"已触发定时任务「{sj.name}」立即执行（后台运行，结果见执行历史）"}
 

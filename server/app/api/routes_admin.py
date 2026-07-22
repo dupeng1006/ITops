@@ -29,6 +29,8 @@ from app.core.security import hash_password
 from app.models.entities import SysUser
 from app.services.audit_service import record_audit
 
+MENU = "系统管理 · 用户维护"
+
 router = APIRouter(
     prefix="/api/admin/users",
     tags=["用户维护"],
@@ -98,7 +100,7 @@ def create_user(
     db.add(user)
     db.flush()
     record_audit(db, "admin", "user_create", "user", user.username,
-                 f"新增用户（编号 {user.username}），角色={body.role}", ip)
+                 f"新增用户（编号 {user.username}），角色={body.role}", ip, menu=MENU)
     db.commit()
     return _to_info(user)
 
@@ -138,7 +140,7 @@ def update_user(
         return _to_info(user)
 
     record_audit(db, "admin", "user_update", "user", user.username,
-                 "；".join(changes), ip)
+                 "；".join(changes), ip, menu=MENU)
     db.commit()
     return _to_info(user)
 
@@ -155,7 +157,7 @@ def reset_password(
     user.password_hash = hash_password(body.new_password)
     user.must_change_password = True  # 重置后首登仍需改密
     record_audit(db, "admin", "user_reset_password", "user", user.username,
-                 "管理员重置密码", ip)
+                 "管理员重置密码", ip, menu=MENU)
     db.commit()
     return {"message": f"已重置用户 {user.username} 的密码，该用户下次登录需修改密码"}
 
@@ -173,6 +175,6 @@ def delete_user(
 
     username = user.username
     db.delete(user)
-    record_audit(db, "admin", "user_delete", "user", username, "删除用户", ip)
+    record_audit(db, "admin", "user_delete", "user", username, "删除用户", ip, menu=MENU)
     db.commit()
     return {"message": f"已删除用户 {username}"}

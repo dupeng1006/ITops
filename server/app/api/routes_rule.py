@@ -55,6 +55,11 @@ from app.services.audit_service import record_audit
 
 logger = logging.getLogger(__name__)
 
+MENU_MAP = "规则配置中心 · 映射规则"
+MENU_BULK = "规则配置中心 · 特殊产品清单"
+MENU_TH = "规则配置中心 · 阈值参数"
+MENU_IMP = "规则配置中心 · 导入导出"
+
 router = APIRouter(prefix="/api/rules", tags=["规则配置"])
 
 # 阈值参数键与合法取值范围（value 闭区间）
@@ -201,8 +206,7 @@ def create_mapping(
     db.add(row)
     db.flush()
     record_audit(db, user.username, "rule_mapping_create", "rule_code_mapping", str(row.id),
-                 f"新增映射 {source}→{target}（{'启用' if body.enabled else '停用'}）",
-                 _client_ip(request))
+                 f"新增映射 {source}→{target}（{'启用' if body.enabled else '停用'}）", _client_ip(request), menu=MENU_MAP)
     db.commit()
     return _to_mapping_info(row)
 
@@ -240,7 +244,7 @@ def update_mapping(
 
     row.updated_by = user.username
     record_audit(db, user.username, "rule_mapping_update", "rule_code_mapping", str(row.id),
-                 f"修改映射 id={row.id}: " + "；".join(changes), _client_ip(request))
+                 f"修改映射 id={row.id}: " + "；".join(changes), _client_ip(request), menu=MENU_MAP)
     db.commit()
     return _to_mapping_info(row)
 
@@ -259,7 +263,7 @@ def delete_mapping(
     detail = f"删除映射 {row.source_code}→{row.target_code}（{'启用' if row.enabled else '停用'}）"
     db.delete(row)
     record_audit(db, user.username, "rule_mapping_delete", "rule_code_mapping",
-                 str(mapping_id), detail, _client_ip(request))
+                 str(mapping_id), detail, _client_ip(request), menu=MENU_MAP)
     db.commit()
     return {"message": f"已删除映射规则 id={mapping_id}"}
 
@@ -305,8 +309,7 @@ def create_bulk_product(
     db.flush()
     record_audit(db, user.username, "rule_bulk_create", "rule_bulk_product", str(row.id),
                  f"新增特殊产品 {code}（{'启用' if body.enabled else '停用'}，"
-                 f"颜色 {color}，差异说明 {note or '(默认)'}）",
-                 _client_ip(request))
+                 f"颜色 {color}，差异说明 {note or '(默认)'}）", _client_ip(request), menu=MENU_MAP)
     db.commit()
     return _to_bulk_info(row)
 
@@ -355,7 +358,7 @@ def update_bulk_product(
 
     row.updated_by = user.username
     record_audit(db, user.username, "rule_bulk_update", "rule_bulk_product", str(row.id),
-                 f"修改特殊产品 id={row.id}: " + "；".join(changes), _client_ip(request))
+                 f"修改特殊产品 id={row.id}: " + "；".join(changes), _client_ip(request), menu=MENU_MAP)
     db.commit()
     return _to_bulk_info(row)
 
@@ -374,7 +377,7 @@ def delete_bulk_product(
     detail = f"删除特殊产品 {row.product_code}（{'启用' if row.enabled else '停用'}）"
     db.delete(row)
     record_audit(db, user.username, "rule_bulk_delete", "rule_bulk_product",
-                 str(bulk_id), detail, _client_ip(request))
+                 str(bulk_id), detail, _client_ip(request), menu=MENU_BULK)
     db.commit()
     return {"message": f"已删除特殊产品 id={bulk_id}"}
 
@@ -417,7 +420,7 @@ def update_threshold(
         db.add(row)
         db.flush()
         record_audit(db, user.username, "rule_threshold_update", "rule_threshold", param_key,
-                     f"阈值 {param_key}: (新增){body.value}", _client_ip(request))
+                     f"阈值 {param_key}: (新增){body.value}", _client_ip(request), menu=MENU_BULK)
         db.commit()
         return _to_threshold_info(row)
 
@@ -425,7 +428,7 @@ def update_threshold(
     row.param_value = repr(body.value)
     row.updated_by = user.username
     record_audit(db, user.username, "rule_threshold_update", "rule_threshold", param_key,
-                 f"阈值 {param_key}: {old_value}→{body.value}", _client_ip(request))
+                 f"阈值 {param_key}: {old_value}→{body.value}", _client_ip(request), menu=MENU_BULK)
     db.commit()
     return _to_threshold_info(row)
 
@@ -579,7 +582,7 @@ def import_rules(
         if threshold_details:
             audit_detail += "；阈值 " + "，".join(threshold_details)
         record_audit(db, user.username, "rule_import", "rule_config", None,
-                     audit_detail, _client_ip(request))
+                     audit_detail, _client_ip(request), menu=MENU_TH)
         db.commit()
     except HTTPException:
         db.rollback()

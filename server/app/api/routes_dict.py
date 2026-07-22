@@ -45,6 +45,8 @@ from app.services.dict_service import DictError
 
 logger = logging.getLogger(__name__)
 
+MENU_DICT = "数据字典查询"
+
 router = APIRouter(tags=["数据字典查询"])
 
 
@@ -182,8 +184,7 @@ def add_favorite(
     db.add(row)
     db.flush()
     record_audit(db, user.username, "dict_favorite_add", "dict_favorite", str(body.table_id),
-                 f"收藏字典表 {detail['table_code']}（{detail['table_name'] or '-'}）",
-                 _client_ip(request))
+                 f"收藏字典表 {detail['table_code']}（{detail['table_name'] or '-'}）", _client_ip(request), menu=MENU_DICT)
     db.commit()
     return DictFavoriteInfo(
         id=row.id, table_id=row.table_id, table_code=row.table_code,
@@ -210,8 +211,7 @@ def remove_favorite(
         raise HTTPException(status_code=404, detail="未收藏该表")
     db.delete(row)
     record_audit(db, user.username, "dict_favorite_remove", "dict_favorite", str(table_id),
-                 f"取消收藏字典表 {row.table_code}（{row.table_name or '-'}）",
-                 _client_ip(request))
+                 f"取消收藏字典表 {row.table_code}（{row.table_name or '-'}）", _client_ip(request), menu=MENU_DICT)
     db.commit()
     return None
 
@@ -244,8 +244,7 @@ def gen_sql(
     record_audit(db, user.username, "dict_gen_sql", "dict_table",
                  ",".join(str(t.table_id) for t in body.tables),
                  f"数据字典生成 SQL（表 {len(body.tables)} 张，"
-                 f"JOIN {len(result['joins'])} 个，警告 {len(result['warnings'])} 条）",
-                 _client_ip(request))
+                 f"JOIN {len(result['joins'])} 个，警告 {len(result['warnings'])} 条）", _client_ip(request), menu=MENU_DICT)
     db.commit()
     return result
 
@@ -281,8 +280,7 @@ def save_template(
     db.add(row)
     db.flush()
     record_audit(db, user.username, "tpl_create", "ds_query_template", str(row.id),
-                 f"数据字典保存查询模板 {name}（模块 custom，数据源 id={row.ds_id}）",
-                 _client_ip(request))
+                 f"数据字典保存查询模板 {name}（模块 custom，数据源 id={row.ds_id}）", _client_ip(request), menu=MENU_DICT)
     db.commit()
     return QueryTemplateInfo(
         id=row.id, name=row.name, module=row.module, ds_id=row.ds_id,

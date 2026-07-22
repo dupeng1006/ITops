@@ -423,7 +423,7 @@ def create_m1_job(
             import shutil
             shutil.rmtree(input_dir.parent, ignore_errors=True)
             record_audit(db, user.username, "upload_create_job", "recon_job", None,
-                         f"M1 任务 db 取数失败: {e.detail}", ip)
+                         f"M1 任务 db 取数失败: {e.detail}", ip, menu="数据核对中心 · M1 基金资产与净值核对")
             db.commit()
             raise
         saved_paths = [("基金资产表", fund_path), ("净值查询表", net_path)]
@@ -441,7 +441,7 @@ def create_m1_job(
         import shutil
         shutil.rmtree(input_dir.parent, ignore_errors=True)
         record_audit(db, user.username, "upload_create_job", "recon_job", None,
-                     f"M1 任务输入校验失败: {str(e).splitlines()[0]}", ip)
+                     f"M1 任务输入校验失败: {str(e).splitlines()[0]}", ip, menu="数据核对中心 · M1 基金资产与净值核对")
         db.commit()
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -462,7 +462,7 @@ def create_m1_job(
             job_id=job_id, file_type="input",
             file_path=str(path), file_name=path.name,
         ))
-    record_audit(db, user.username, "upload_create_job", "recon_job", job_id, audit_detail, ip)
+    record_audit(db, user.username, "upload_create_job", "recon_job", job_id, audit_detail, ip, menu="数据核对中心 · M1 基金资产与净值核对")
     db.commit()
 
     # 5. 后台异步执行
@@ -766,7 +766,7 @@ def create_m2_job(
             import shutil
             shutil.rmtree(input_dir.parent, ignore_errors=True)
             record_audit(db, user.username, "upload_create_job", "recon_job", None,
-                         f"M2 任务 db 取数失败: {e.detail}", ip)
+                         f"M2 任务 db 取数失败: {e.detail}", ip, menu="数据核对中心 · M2 估值价格核对")
             db.commit()
             raise
         extra_inputs = []
@@ -785,7 +785,7 @@ def create_m2_job(
         import shutil
         shutil.rmtree(input_dir.parent, ignore_errors=True)
         record_audit(db, user.username, "upload_create_job", "recon_job", None,
-                     f"M2 任务输入校验失败: {str(e).splitlines()[0]}", ip)
+                     f"M2 任务输入校验失败: {str(e).splitlines()[0]}", ip, menu="数据核对中心 · M2 估值价格核对")
         db.commit()
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -807,7 +807,7 @@ def create_m2_job(
             job_id=job_id, file_type="input",
             file_path=str(path), file_name=path.name,
         ))
-    record_audit(db, user.username, "upload_create_job", "recon_job", job_id, audit_detail, ip)
+    record_audit(db, user.username, "upload_create_job", "recon_job", job_id, audit_detail, ip, menu="数据核对中心 · M2 估值价格核对")
     db.commit()
 
     # 5. 后台异步执行
@@ -878,7 +878,7 @@ def create_m3_job(
         import shutil
         shutil.rmtree(input_dir.parent, ignore_errors=True)
         record_audit(db, user.username, "upload_create_job", "recon_job", None,
-                     f"M3 任务输入校验失败: {str(e).splitlines()[0]}", ip)
+                     f"M3 任务输入校验失败: {str(e).splitlines()[0]}", ip, menu="数据核对中心 · M3 银行间ID匹配")
         db.commit()
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -896,7 +896,7 @@ def create_m3_job(
         ))
     record_audit(db, user.username, "upload_create_job", "recon_job", job_id,
                  f"创建 M3 匹配任务，业务日期={date_str}，"
-                 f"基金属性表={saved_paths[0][1].name}，交易成员表={saved_paths[1][1].name}", ip)
+                 f"基金属性表={saved_paths[0][1].name}，交易成员表={saved_paths[1][1].name}", ip, menu="数据核对中心 · M3 银行间ID匹配")
     db.commit()
 
     # 5. 后台异步执行
@@ -1038,7 +1038,7 @@ def download_result(
     media_type = ("text/markdown; charset=utf-8" if record.file_name.endswith(".md")
                   else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     record_audit(db, user.username, "download", "recon_job", job_id,
-                 f"下载结果文件 {record.file_name}", ip)
+                 f"下载结果文件 {record.file_name}", ip, menu="报告归档中心")
     db.commit()
     return FileResponse(
         path=record.file_path,

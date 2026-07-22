@@ -33,17 +33,18 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)):
 
     if user is None or not verify_password(body.password, user.password_hash):
         record_audit(db, body.username, "login_failed", "user", body.username,
-                     "用户名或密码错误", ip)
+                     "用户名或密码错误", ip, menu="登录页")
         db.commit()
         raise HTTPException(status_code=401, detail="用户名或密码错误")
     if user.status != "active":
         record_audit(db, body.username, "login_failed", "user", body.username,
-                     "账号已停用", ip)
+                     "账号已停用", ip, menu="登录页")
         db.commit()
         raise HTTPException(status_code=403, detail="账号已被停用，请联系管理员")
 
     token = create_access_token(subject=user.username, role=user.role)
-    record_audit(db, user.username, "login", "user", user.username, "登录成功", ip)
+    record_audit(db, user.username, "login", "user", user.username, "登录成功", ip,
+                 menu="登录页")
     db.commit()
     return LoginResponse(
         access_token=token,
@@ -71,6 +72,6 @@ def change_password(
     user.password_hash = hash_password(body.new_password)
     user.must_change_password = False
     record_audit(db, user.username, "change_password", "user", user.username,
-                 "修改密码", ip)
+                 "修改密码", ip, menu="登录页")
     db.commit()
     return {"message": "密码修改成功"}

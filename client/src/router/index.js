@@ -21,6 +21,7 @@ const routes = [
       { path: 'datasource/templates', name: 'ds-templates', component: () => import('../views/QueryTemplatesView.vue'), meta: { title: '查询模板管理', roles: ['admin'] } },
       { path: 'system/config', name: 'system-config', component: () => import('../views/SystemConfigView.vue'), meta: { title: '系统配置', roles: ['admin'] } },
       { path: 'users', name: 'users', component: () => import('../views/UsersView.vue'), meta: { title: '用户维护', roles: ['admin'] } },
+      { path: 'audit-logs', name: 'audit-logs', component: () => import('../views/AuditLogView.vue'), meta: { title: '系统日志查询', roles: ['admin'] } },
     ],
   },
   { path: '/:pathMatch(.*)*', redirect: '/dashboard' },

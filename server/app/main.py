@@ -33,6 +33,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api import (
     routes_admin,
+    routes_audit,
     routes_auth,
     routes_dashboard,
     routes_datasource,
@@ -78,6 +79,7 @@ app = FastAPI(
 
 app.include_router(routes_auth.router)
 app.include_router(routes_admin.router)
+app.include_router(routes_audit.router)
 app.include_router(routes_recon.router)
 app.include_router(routes_rule.router)
 app.include_router(routes_datasource.router)
