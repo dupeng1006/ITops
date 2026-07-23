@@ -42,6 +42,7 @@ from app.models.entities import DictFavorite, DsConnection, DsQueryTemplate, Sys
 from app.services import dict_service
 from app.services.audit_service import record_audit
 from app.services.dict_service import DictError
+from app.services.user_display import resolve_display_names
 
 logger = logging.getLogger(__name__)
 
@@ -286,5 +287,6 @@ def save_template(
         id=row.id, name=row.name, module=row.module, ds_id=row.ds_id,
         ds_name=ds.name, sql_text=row.sql_text, column_map=None, params_def=None,
         enabled=row.enabled, updated_by=row.updated_by,
+        updated_by_name=resolve_display_names(db, [row.updated_by]).get(row.updated_by),
         updated_at=row.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
     )

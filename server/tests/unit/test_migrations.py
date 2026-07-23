@@ -40,7 +40,7 @@ if str(SERVER_ROOT) not in sys.path:
     sys.path.insert(0, str(SERVER_ROOT))
 
 # 期望已登记迁移版本（新增迁移时只需改这一处常量）
-EXPECTED_VERSIONS = [2, 3, 4, 5, 6]
+EXPECTED_VERSIONS = [2, 3, 4, 5, 6, 7]
 
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -257,10 +257,89 @@ def test_v3_user_columns() -> None:
     engine.dispose()
 
 
+def _build_legacy_trello_db(db_path: Path, cipher_key: str) -> None:
+    """手工构造 v6 结构库：trello_config 含 1 行明文 api_key + 1 行已加密 api_key，
+    schema_version 预登记 v2-v6（仅验证 v7 迁移本身）"""
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(db_path))
+    conn.execute(
+        "CREATE TABLE trello_config ("
+        " id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        " name VARCHAR(100) NOT NULL UNIQUE,"
+        " api_key VARCHAR(200) NOT NULL,"
+        " token_enc TEXT NOT NULL,"
+        " enabled BOOLEAN NOT NULL DEFAULT 1,"
+        " sync_min INTEGER NOT NULL DEFAULT 5,"
+        " last_sync_at DATETIME,"
+        " last_sync_status VARCHAR(20),"
+        " last_sync_error TEXT,"
+        " updated_by VARCHAR(50),"
+        " created_at DATETIME NOT NULL,"
+        " updated_at DATETIME NOT NULL)"
+    )
+    conn.execute(
+        "INSERT INTO trello_config(name, api_key, token_enc, enabled, sync_min,"
+        " updated_by, created_at, updated_at) VALUES"
+        f" ('明文配置', 'plain-trello-key-001', 'x', 1, 5, 'admin',"
+        f"  '2026-07-23 10:00:00', '2026-07-23 10:00:00'),"
+        f" ('密文配置', '{cipher_key}', 'x', 1, 5, 'admin',"
+        f"  '2026-07-23 10:00:00', '2026-07-23 10:00:00')"
+    )
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS schema_version ("
+        " version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)"
+    )
+    for v in (2, 3, 4, 5, 6):
+        conn.execute(
+            "INSERT INTO schema_version(version, applied_at)"
+            " VALUES(?, '2026-07-23 10:00:00')", (v,))
+    conn.commit()
+    conn.close()
+
+
+def test_v7_trello_api_key() -> None:
+    """E. v6→v7：trello_config.api_key 明文迁移为 Fernet 密文（幂等）"""
+    from app.core.crypto import decrypt_secret, encrypt_secret
+    db_path = TMP_ROOT / "legacy_trello.db"
+    cipher_key = encrypt_secret("already-encrypted-key")
+    _build_legacy_trello_db(db_path, cipher_key)
+
+    from sqlalchemy import create_engine
+    engine = create_engine(f"sqlite:///{db_path}",
+                           connect_args={"check_same_thread": False})
+    run_migrations(engine)
+
+    conn = sqlite3.connect(str(db_path))
+    rows = dict(conn.execute("SELECT name, api_key FROM trello_config").fetchall())
+    versions = [r[0] for r in conn.execute(
+        "SELECT version FROM schema_version ORDER BY version").fetchall()]
+    conn.close()
+
+    check("E1 明文行已加密（不再是明文）",
+          rows["明文配置"] != "plain-trello-key-001", rows["明文配置"])
+    check("E2 明文行加密后可解密还原",
+          decrypt_secret(rows["明文配置"]) == "plain-trello-key-001")
+    check("E3 已密文行原样跳过（值不变）", rows["密文配置"] == cipher_key)
+    check("E4 已密文行解密值不变",
+          decrypt_secret(rows["密文配置"]) == "already-encrypted-key")
+    check("E5 schema_version 登记全部版本", versions == EXPECTED_VERSIONS, str(versions))
+
+    # 幂等重跑：密文不二次加密、版本不重复登记
+    run_migrations(engine)
+    conn = sqlite3.connect(str(db_path))
+    rows2 = dict(conn.execute("SELECT name, api_key FROM trello_config").fetchall())
+    cnt = conn.execute("SELECT COUNT(*) FROM schema_version").fetchone()[0]
+    conn.close()
+    check("E6 重复执行幂等（密文不变、版本不重复）",
+          rows2 == rows and cnt == len(EXPECTED_VERSIONS), f"cnt={cnt}")
+    engine.dispose()
+
+
 if __name__ == "__main__":
     test_legacy_db_migration()
     test_fresh_db_migration()
     test_v3_user_columns()
+    test_v7_trello_api_key()
     print(f"\n{'全部通过' if not failures else f'{len(failures)} 项失败'}")
     for f in failures:
         print(f"  - {f}")

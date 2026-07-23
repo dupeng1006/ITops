@@ -66,16 +66,17 @@ def sync_trello_config(db: Session, config: TrelloConfig) -> Dict[str, Any]:
     start = time.time()
     try:
         token = decrypt_secret(config.token_enc)
+        api_key = decrypt_secret(config.api_key)
     except Exception as e:
         return {
             "success": False,
             "boards": 0,
             "cards": 0,
-            "message": f"Token 解密失败：{e}",
+            "message": f"凭据解密失败：{e}",
             "elapsed_ms": 0,
         }
 
-    client = TrelloClient(api_key=config.api_key, token=token)
+    client = TrelloClient(api_key=api_key, token=token)
 
     try:
         # 1. 拉取 boards

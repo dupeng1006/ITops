@@ -21,6 +21,8 @@ O32 日常运维平台 —— 轻量 schema 迁移机制
     v3 → v4: 新增 dict_favorite（数据字典表收藏）。
     v4 → v5: sys_audit_log 增加 mac（来源 MAC，服务端 ARP 解析）、
              menu（操作菜单）两列（存量日志该两列为 NULL，无损）。
+    v5 → v6: 新增 Trello 集成三张表（trello_config / trello_board / trello_card）。
+    v6 → v7: trello_config.api_key 由明文迁移为 Fernet 密文（已密文行跳过，幂等）。
 
 作者：技术部
 版本：1.0.0
@@ -201,6 +203,34 @@ def _migrate_v6(engine: Engine) -> None:
                 logger.info(f"迁移 v6: {table_name} 表已存在，跳过（幂等）")
 
 
+def _migrate_v7(engine: Engine) -> None:
+    """v6 → v7：trello_config.api_key 由明文迁移为 Fernet 密文（幂等：已密文行跳过）"""
+    if not _table_exists(engine, "trello_config"):
+        logger.info("迁移 v7: trello_config 表不存在（由建表流程负责创建），跳过")
+        return
+    # 延迟导入：迁移模块保持零业务依赖，仅本迁移需要加解密
+    from app.core.crypto import decrypt_secret, encrypt_secret
+
+    with engine.connect() as conn:
+        rows = conn.execute(text("SELECT id, api_key FROM trello_config")).fetchall()
+    encrypted = 0
+    with engine.begin() as conn:
+        for row_id, api_key in rows:
+            if not api_key:
+                continue
+            try:
+                decrypt_secret(api_key)
+                continue  # 已是 Fernet 密文，跳过（幂等）
+            except ValueError:
+                pass  # 解密失败 = 历史明文，落库前加密
+            conn.execute(
+                text("UPDATE trello_config SET api_key = :k WHERE id = :i"),
+                {"k": encrypt_secret(api_key), "i": row_id},
+            )
+            encrypted += 1
+    logger.info(f"迁移 v7: trello_config.api_key 明文加密 {encrypted} 行（其余已是密文，跳过）")
+
+
 # 有序迁移列表（version 严格递增，禁止插序/改序）
 SCHEMA_MIGRATIONS: List[Migration] = [
     (2, "rule_bulk_product 增加 color 列并清理历史占位说明", _migrate_v2),
@@ -208,6 +238,7 @@ SCHEMA_MIGRATIONS: List[Migration] = [
     (4, "新增 dict_favorite 数据字典表收藏", _migrate_v4),
     (5, "sys_audit_log 增加 mac / menu 两列", _migrate_v5),
     (6, "新增 Trello 集成三张表（trello_config / trello_board / trello_card）", _migrate_v6),
+    (7, "trello_config.api_key 明文迁移为 Fernet 密文", _migrate_v7),
 ]
 
 

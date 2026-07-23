@@ -64,6 +64,7 @@ from app.datasource.drivers import (
 from app.datasource.sql_guard import SqlGuardError, validate_select_only
 from app.models.entities import DsConnection, DsQueryTemplate, SysUser
 from app.services.audit_service import record_audit
+from app.services.user_display import resolve_display_names
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ def _client_ip(request: Request) -> Optional[str]:
     return request.client.host if request.client else None
 
 
-def _to_ds_info(ds: DsConnection) -> DatasourceInfo:
+def _to_ds_info(ds: DsConnection, name_map: Optional[dict] = None) -> DatasourceInfo:
     extra = None
     if ds.extra_json:
         try:
@@ -99,11 +100,13 @@ def _to_ds_info(ds: DsConnection) -> DatasourceInfo:
         username=ds.username, password=PASSWORD_MASK,
         extra=extra, enabled=ds.enabled,
         updated_by=ds.updated_by,
+        updated_by_name=(name_map.get(ds.updated_by) if name_map else None),
         updated_at=ds.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
     )
 
 
-def _to_tpl_info(db: Session, tpl: DsQueryTemplate) -> QueryTemplateInfo:
+def _to_tpl_info(db: Session, tpl: DsQueryTemplate,
+                 name_map: Optional[dict] = None) -> QueryTemplateInfo:
     ds = db.get(DsConnection, tpl.ds_id)
     column_map = json.loads(tpl.column_map_json) if tpl.column_map_json else None
     params_def = json.loads(tpl.params_json) if tpl.params_json else None
@@ -112,6 +115,7 @@ def _to_tpl_info(db: Session, tpl: DsQueryTemplate) -> QueryTemplateInfo:
         ds_name=ds.name if ds else None,
         sql_text=tpl.sql_text, column_map=column_map, params_def=params_def,
         enabled=tpl.enabled, updated_by=tpl.updated_by,
+        updated_by_name=(name_map.get(tpl.updated_by) if name_map else None),
         updated_at=tpl.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
     )
 
@@ -222,7 +226,8 @@ def list_datasources(
     db: Session = Depends(get_db),
 ):
     rows = db.execute(select(DsConnection).order_by(DsConnection.id)).scalars().all()
-    return [_to_ds_info(ds) for ds in rows]
+    return [_to_ds_info(ds, resolve_display_names(db, (x.updated_by for x in rows)))
+            for ds in rows]
 
 
 @router.post("/api/datasources", response_model=DatasourceInfo, summary="新增数据源")
@@ -255,7 +260,7 @@ def create_datasource(
     record_audit(db, user.username, "ds_create", "ds_connection", str(row.id),
                  f"新增数据源 {name}（{DB_TYPE_LABELS[db_type]} {body.host or ''}）", _client_ip(request), menu=MENU_DS)
     db.commit()
-    return _to_ds_info(row)
+    return _to_ds_info(row, resolve_display_names(db, [row.updated_by]))
 
 
 @router.put("/api/datasources/{ds_id}", response_model=DatasourceInfo, summary="修改数据源")
@@ -314,13 +319,13 @@ def update_datasource(
         changes.append(f"启用 {row.enabled}→{body.enabled}")
         row.enabled = body.enabled
     if not changes:
-        return _to_ds_info(row)
+        return _to_ds_info(row, resolve_display_names(db, [row.updated_by]))
 
     row.updated_by = user.username
     record_audit(db, user.username, "ds_update", "ds_connection", str(row.id),
                  f"修改数据源 id={row.id}: " + "；".join(changes), _client_ip(request), menu=MENU_DS)
     db.commit()
-    return _to_ds_info(row)
+    return _to_ds_info(row, resolve_display_names(db, [row.updated_by]))
 
 
 @router.delete("/api/datasources/{ds_id}", summary="删除数据源")
@@ -388,7 +393,8 @@ def list_templates(
     if module:
         stmt = stmt.where(DsQueryTemplate.module == module)
     rows = db.execute(stmt).scalars().all()
-    return [_to_tpl_info(db, t) for t in rows]
+    return [_to_tpl_info(db, t, resolve_display_names(db, (x.updated_by for x in rows)))
+            for t in rows]
 
 
 @router.post("/api/query-templates", response_model=QueryTemplateInfo, summary="新增查询模板")
@@ -414,7 +420,7 @@ def create_template(
     record_audit(db, user.username, "tpl_create", "ds_query_template", str(row.id),
                  f"新增查询模板 {name}（模块 {row.module}，数据源 id={row.ds_id}）", _client_ip(request), menu=MENU_DS)
     db.commit()
-    return _to_tpl_info(db, row)
+    return _to_tpl_info(db, row, resolve_display_names(db, [row.updated_by]))
 
 
 @router.put("/api/query-templates/{tpl_id}", response_model=QueryTemplateInfo, summary="修改查询模板")
@@ -460,13 +466,13 @@ def update_template(
         changes.append(f"启用 {row.enabled}→{body.enabled}")
         row.enabled = body.enabled
     if not changes:
-        return _to_tpl_info(db, row)
+        return _to_tpl_info(db, row, resolve_display_names(db, [row.updated_by]))
 
     row.updated_by = user.username
     record_audit(db, user.username, "tpl_update", "ds_query_template", str(row.id),
                  f"修改查询模板 id={row.id}: " + "；".join(changes), _client_ip(request), menu=MENU_TPL)
     db.commit()
-    return _to_tpl_info(db, row)
+    return _to_tpl_info(db, row, resolve_display_names(db, [row.updated_by]))
 
 
 @router.delete("/api/query-templates/{tpl_id}", summary="删除查询模板")

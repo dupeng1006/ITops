@@ -2,9 +2,9 @@
 """
 O32 日常运维平台 —— Trello 集成接口（v0.6.4）
 
-    GET    /api/trello/configs             Trello 配置列表（admin，Token 掩码）
-    POST   /api/trello/configs             新增配置（admin，Token 加密落库）
-    PUT    /api/trello/configs/{id}         修改配置（admin；Token 留空不修改）
+    GET    /api/trello/configs             Trello 配置列表（admin，API Key/Token 掩码）
+    POST   /api/trello/configs             新增配置（admin，API Key/Token 加密落库）
+    PUT    /api/trello/configs/{id}         修改配置（admin；API Key/Token 留空不修改）
     DELETE /api/trello/configs/{id}         删除配置（admin）
     POST   /api/trello/configs/{id}/test   测试连接（admin）
     POST   /api/trello/configs/{id}/sync    手动同步（admin）
@@ -12,7 +12,8 @@ O32 日常运维平台 —— Trello 集成接口（v0.6.4）
     GET    /api/trello/cards               卡片列表（全部角色，支持状态/逾期/搜索筛选）
 
 安全约束：
-    - Trello Token 用 Fernet 加密存储；读取永不返回明文（恒定掩码 ********）；
+    - Trello API Key / Token 均用 Fernet 加密存储；读取永不返回明文（恒定掩码 ********）；
+    - 存量明文 API Key 由 schema 迁移 v7 自动加密；
     - 全部写操作 + 测试/同步均审计留痕。
 
 作者：技术部
@@ -42,6 +43,7 @@ from app.core.crypto import PASSWORD_MASK, decrypt_secret, encrypt_secret
 from app.core.deps import get_db, require_roles
 from app.models.entities import SysUser, TrelloBoard, TrelloCard, TrelloConfig
 from app.services.audit_service import record_audit
+from app.services.user_display import resolve_display_names
 from app.services import schedule_service
 from app.services.trello_client import TrelloAPIError, TrelloClient
 from app.services.trello_service import STATUS_LABELS, sync_trello_config
@@ -62,11 +64,11 @@ def _client_ip(request: Request) -> Optional[str]:
     return request.client.host if request.client else None
 
 
-def _to_config_info(cfg: TrelloConfig) -> TrelloConfigInfo:
+def _to_config_info(cfg: TrelloConfig, name_map: Optional[dict] = None) -> TrelloConfigInfo:
     return TrelloConfigInfo(
         id=cfg.id,
         name=cfg.name,
-        api_key=cfg.api_key,
+        api_key=PASSWORD_MASK,
         token=PASSWORD_MASK,
         enabled=cfg.enabled,
         sync_min=cfg.sync_min,
@@ -74,6 +76,7 @@ def _to_config_info(cfg: TrelloConfig) -> TrelloConfigInfo:
         last_sync_status=cfg.last_sync_status,
         last_sync_error=cfg.last_sync_error,
         updated_by=cfg.updated_by,
+        updated_by_name=(name_map.get(cfg.updated_by) if name_map else None),
         updated_at=cfg.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
         created_at=cfg.created_at.strftime("%Y-%m-%d %H:%M:%S"),
     )
@@ -138,7 +141,8 @@ def list_trello_configs(
     db: Session = Depends(get_db),
 ):
     rows = db.execute(select(TrelloConfig).order_by(TrelloConfig.id)).scalars().all()
-    return [_to_config_info(cfg) for cfg in rows]
+    return [_to_config_info(cfg, resolve_display_names(db, (x.updated_by for x in rows)))
+            for cfg in rows]
 
 
 @router.post("/api/trello/configs", response_model=TrelloConfigInfo, summary="新增 Trello 配置")
@@ -153,7 +157,7 @@ def create_trello_config(
 
     cfg = TrelloConfig(
         name=name,
-        api_key=body.api_key.strip(),
+        api_key=encrypt_secret(body.api_key.strip()),
         token_enc=encrypt_secret(body.token),
         enabled=body.enabled,
         sync_min=body.sync_min,
@@ -165,7 +169,7 @@ def create_trello_config(
                  f"新增 Trello 配置 {name}", _client_ip(request), menu=MENU_TRELLO_CONFIG)
     db.commit()
     schedule_service.sync_trello_schedule(cfg)
-    return _to_config_info(cfg)
+    return _to_config_info(cfg, resolve_display_names(db, [cfg.updated_by]))
 
 
 @router.put("/api/trello/configs/{config_id}", response_model=TrelloConfigInfo, summary="修改 Trello 配置")
@@ -183,9 +187,9 @@ def update_trello_config(
         _check_name_unique(db, body.name.strip(), exclude_id=config_id)
         changes.append(f"名称 {cfg.name}→{body.name.strip()}")
         cfg.name = body.name.strip()
-    if body.api_key is not None and body.api_key.strip() != cfg.api_key:
+    if body.api_key is not None and body.api_key.strip():
+        cfg.api_key = encrypt_secret(body.api_key.strip())
         changes.append("API Key 已更新")
-        cfg.api_key = body.api_key.strip()
     if body.token is not None and body.token.strip():
         cfg.token_enc = encrypt_secret(body.token.strip())
         changes.append("Token 已更新")
@@ -197,14 +201,14 @@ def update_trello_config(
         cfg.sync_min = body.sync_min
 
     if not changes:
-        return _to_config_info(cfg)
+        return _to_config_info(cfg, resolve_display_names(db, [cfg.updated_by]))
 
     cfg.updated_by = user.username
     record_audit(db, user.username, "trello_config_update", "trello_config", str(config_id),
                  f"修改 Trello 配置 id={config_id}: " + "；".join(changes), _client_ip(request), menu=MENU_TRELLO_CONFIG)
     db.commit()
     schedule_service.sync_trello_schedule(cfg)
-    return _to_config_info(cfg)
+    return _to_config_info(cfg, resolve_display_names(db, [cfg.updated_by]))
 
 
 @router.delete("/api/trello/configs/{config_id}", summary="删除 Trello 配置")
@@ -234,7 +238,15 @@ def test_trello_config(
     cfg = _get_config_or_404(db, config_id)
     try:
         token = decrypt_secret(cfg.token_enc)
-        client = TrelloClient(api_key=cfg.api_key, token=token)
+        api_key = decrypt_secret(cfg.api_key)
+    except ValueError as e:
+        record_audit(db, user.username, "trello_config_test", "trello_config", str(config_id),
+                     f"测试 Trello 配置 {cfg.name}: 失败（凭据解密失败：{e}）",
+                     _client_ip(request), menu=MENU_TRELLO_CONFIG)
+        db.commit()
+        return TestConnectionResponse(success=False, message=f"凭据解密失败：{e}")
+    try:
+        client = TrelloClient(api_key=api_key, token=token)
         me = client.get_member()
         msg = f"连接成功：{me.get('fullName', '')}（@{me.get('username', '')}）"
         record_audit(db, user.username, "trello_config_test", "trello_config", str(config_id),

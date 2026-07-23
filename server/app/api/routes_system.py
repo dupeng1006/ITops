@@ -33,6 +33,7 @@ from app.api.schemas import (
 from app.core.deps import get_db, require_roles
 from app.models.entities import SysConfig, SysSubjectPriceRule, SysUser
 from app.services.audit_service import record_audit
+from app.services.user_display import resolve_display_names
 
 logger = logging.getLogger(__name__)
 
@@ -46,11 +47,12 @@ def _client_ip(request: Request) -> Optional[str]:
     return request.client.host if request.client else None
 
 
-def _to_info(r: SysSubjectPriceRule) -> SubjectPriceRuleInfo:
+def _to_info(r: SysSubjectPriceRule, name_map: Optional[dict] = None) -> SubjectPriceRuleInfo:
     return SubjectPriceRuleInfo(
         id=r.id, subject_prefix=r.subject_prefix, price_field=r.price_field,
         description=r.description, note=r.note, enabled=r.enabled,
         sort_order=r.sort_order, updated_by=r.updated_by,
+        updated_by_name=(name_map.get(r.updated_by) if name_map else None),
         updated_at=r.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
     )
 
@@ -76,7 +78,8 @@ def list_rules(
         select(SysSubjectPriceRule)
         .order_by(SysSubjectPriceRule.sort_order, SysSubjectPriceRule.id)
     ).scalars().all()
-    return [_to_info(r) for r in rows]
+    return [_to_info(r, resolve_display_names(db, (x.updated_by for x in rows)))
+            for r in rows]
 
 
 @router.post("/subject-price-rules", response_model=SubjectPriceRuleInfo,
@@ -107,7 +110,7 @@ def create_rule(
                  str(row.id),
                  f"新增科目取价规则 {prefix}→{field}（{'启用' if body.enabled else '停用'}，排序 {body.sort_order}）", _client_ip(request), menu=MENU_SUBJ)
     db.commit()
-    return _to_info(row)
+    return _to_info(row, resolve_display_names(db, [row.updated_by]))
 
 
 @router.put("/subject-price-rules/{rule_id}", response_model=SubjectPriceRuleInfo,
@@ -151,13 +154,13 @@ def update_rule(
         changes.append(f"排序号 {row.sort_order}→{body.sort_order}")
         row.sort_order = body.sort_order
     if not changes:
-        return _to_info(row)
+        return _to_info(row, resolve_display_names(db, [row.updated_by]))
 
     row.updated_by = user.username
     record_audit(db, user.username, "sys_subject_rule_update", "sys_subject_price_rule",
                  str(row.id), f"修改科目取价规则 id={row.id}: " + "；".join(changes), _client_ip(request), menu=MENU_SUBJ)
     db.commit()
-    return _to_info(row)
+    return _to_info(row, resolve_display_names(db, [row.updated_by]))
 
 
 @router.delete("/subject-price-rules/{rule_id}", summary="删除科目取价规则")
@@ -214,10 +217,13 @@ def list_params(
     db: Session = Depends(get_db),
 ):
     rows = db.execute(select(SysConfig).order_by(SysConfig.id)).scalars().all()
+    name_map = resolve_display_names(db, (r.updated_by for r in rows))
     return [
         SystemParamInfo(
             param_key=r.param_key, param_value=r.param_value, description=r.description,
-            updated_by=r.updated_by, updated_at=r.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+            updated_by=r.updated_by,
+            updated_by_name=name_map.get(r.updated_by),
+            updated_at=r.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
         )
         for r in rows
     ]

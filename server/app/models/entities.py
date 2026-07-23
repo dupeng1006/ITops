@@ -273,12 +273,12 @@ class RuleThreshold(Base):
 # =============================================================================
 
 class TrelloConfig(Base):
-    """Trello 连接配置表（API Key 明文，Token Fernet 密文存储）"""
+    """Trello 连接配置表（API Key / Token 均 Fernet 密文存储）"""
     __tablename__ = "trello_config"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, comment="配置名称")
-    api_key: Mapped[str] = mapped_column(String(200), nullable=False, comment="Trello API Key")
+    api_key: Mapped[str] = mapped_column(String(200), nullable=False, comment="Trello API Key 密文(Fernet)")
     token_enc: Mapped[str] = mapped_column(Text, nullable=False, comment="Trello Token 密文(Fernet)")
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, comment="是否启用同步")
     sync_min: Mapped[int] = mapped_column(Integer, nullable=False, default=5, comment="同步间隔分钟数")

@@ -120,6 +120,7 @@ class MappingInfo(BaseModel):
     target_code: str
     enabled: bool
     updated_by: Optional[str] = None
+    updated_by_name: Optional[str] = Field(None, description="修改人姓名（system-init 显示为'系统初始化'；查无此人或姓名为空时回退编号）")
     updated_at: str
 
 
@@ -142,6 +143,7 @@ class BulkProductInfo(BaseModel):
     color: str = Field("FFC000", description="行填充色(6位HEX，不含#)")
     enabled: bool
     updated_by: Optional[str] = None
+    updated_by_name: Optional[str] = Field(None, description="修改人姓名（system-init 显示为'系统初始化'；查无此人或姓名为空时回退编号）")
     updated_at: str
 
 
@@ -164,6 +166,7 @@ class ThresholdInfo(BaseModel):
     param_value: str
     description: Optional[str] = None
     updated_by: Optional[str] = None
+    updated_by_name: Optional[str] = Field(None, description="修改人姓名（system-init 显示为'系统初始化'；查无此人或姓名为空时回退编号）")
     updated_at: str
 
 
@@ -244,6 +247,7 @@ class DatasourceInfo(BaseModel):
     extra: Optional[Dict[str, str]] = None
     enabled: bool
     updated_by: Optional[str] = None
+    updated_by_name: Optional[str] = Field(None, description="修改人姓名（system-init 显示为'系统初始化'；查无此人或姓名为空时回退编号）")
     updated_at: str
 
 
@@ -285,6 +289,7 @@ class QueryTemplateInfo(BaseModel):
     params_def: Optional[Dict[str, dict]] = None
     enabled: bool
     updated_by: Optional[str] = None
+    updated_by_name: Optional[str] = Field(None, description="修改人姓名（system-init 显示为'系统初始化'；查无此人或姓名为空时回退编号）")
     updated_at: str
 
 
@@ -313,6 +318,7 @@ class SubjectPriceRuleInfo(BaseModel):
     enabled: bool
     sort_order: int
     updated_by: Optional[str] = None
+    updated_by_name: Optional[str] = Field(None, description="修改人姓名（system-init 显示为'系统初始化'；查无此人或姓名为空时回退编号）")
     updated_at: str
 
 
@@ -405,6 +411,7 @@ class SystemParamInfo(BaseModel):
     param_value: str
     description: Optional[str] = None
     updated_by: Optional[str] = None
+    updated_by_name: Optional[str] = Field(None, description="修改人姓名（system-init 显示为'系统初始化'；查无此人或姓名为空时回退编号）")
     updated_at: str
 
 
@@ -628,7 +635,7 @@ class TrelloConfigUpdateRequest(BaseModel):
 class TrelloConfigInfo(BaseModel):
     id: int
     name: str
-    api_key: str
+    api_key: str = Field(..., description="API Key 掩码（恒定 ********，无明文）")
     token: str = Field(..., description="Token 掩码（恒定 ********，无明文）")
     enabled: bool
     sync_min: int
@@ -636,6 +643,7 @@ class TrelloConfigInfo(BaseModel):
     last_sync_status: Optional[str] = None
     last_sync_error: Optional[str] = None
     updated_by: Optional[str] = None
+    updated_by_name: Optional[str] = Field(None, description="修改人姓名（system-init 显示为'系统初始化'；查无此人或姓名为空时回退编号）")
     updated_at: str
     created_at: str
 

@@ -52,6 +52,7 @@ from app.models.entities import (
     SysUser,
 )
 from app.services.audit_service import record_audit
+from app.services.user_display import resolve_display_names
 
 logger = logging.getLogger(__name__)
 
@@ -101,18 +102,19 @@ def _client_ip(request: Request) -> Optional[str]:
     return request.client.host if request.client else None
 
 
-def _to_mapping_info(m: RuleCodeMapping) -> MappingInfo:
+def _to_mapping_info(m: RuleCodeMapping, name_map: Optional[dict] = None) -> MappingInfo:
     return MappingInfo(
         id=m.id,
         source_code=m.source_code,
         target_code=m.target_code,
         enabled=m.enabled,
         updated_by=m.updated_by,
+        updated_by_name=(name_map.get(m.updated_by) if name_map else None),
         updated_at=m.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
     )
 
 
-def _to_bulk_info(b: RuleBulkProduct) -> BulkProductInfo:
+def _to_bulk_info(b: RuleBulkProduct, name_map: Optional[dict] = None) -> BulkProductInfo:
     return BulkProductInfo(
         id=b.id,
         product_code=b.product_code,
@@ -120,16 +122,18 @@ def _to_bulk_info(b: RuleBulkProduct) -> BulkProductInfo:
         color=(b.color or DEFAULT_SPECIAL_COLOR).upper(),
         enabled=b.enabled,
         updated_by=b.updated_by,
+        updated_by_name=(name_map.get(b.updated_by) if name_map else None),
         updated_at=b.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
     )
 
 
-def _to_threshold_info(t: RuleThreshold) -> ThresholdInfo:
+def _to_threshold_info(t: RuleThreshold, name_map: Optional[dict] = None) -> ThresholdInfo:
     return ThresholdInfo(
         param_key=t.param_key,
         param_value=t.param_value,
         description=t.description,
         updated_by=t.updated_by,
+        updated_by_name=(name_map.get(t.updated_by) if name_map else None),
         updated_at=t.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
     )
 
@@ -184,7 +188,8 @@ def list_mappings(
     rows = db.execute(
         select(RuleCodeMapping).order_by(RuleCodeMapping.id)
     ).scalars().all()
-    return [_to_mapping_info(m) for m in rows]
+    return [_to_mapping_info(m, resolve_display_names(db, (x.updated_by for x in rows)))
+            for m in rows]
 
 
 @router.post("/mappings", response_model=MappingInfo, summary="新增映射规则")
@@ -208,7 +213,7 @@ def create_mapping(
     record_audit(db, user.username, "rule_mapping_create", "rule_code_mapping", str(row.id),
                  f"新增映射 {source}→{target}（{'启用' if body.enabled else '停用'}）", _client_ip(request), menu=MENU_MAP)
     db.commit()
-    return _to_mapping_info(row)
+    return _to_mapping_info(row, resolve_display_names(db, [row.updated_by]))
 
 
 @router.put("/mappings/{mapping_id}", response_model=MappingInfo, summary="修改映射规则")
@@ -240,13 +245,13 @@ def update_mapping(
         changes.append(f"启用 {row.enabled}→{body.enabled}")
         row.enabled = body.enabled
     if not changes:
-        return _to_mapping_info(row)
+        return _to_mapping_info(row, resolve_display_names(db, [row.updated_by]))
 
     row.updated_by = user.username
     record_audit(db, user.username, "rule_mapping_update", "rule_code_mapping", str(row.id),
                  f"修改映射 id={row.id}: " + "；".join(changes), _client_ip(request), menu=MENU_MAP)
     db.commit()
-    return _to_mapping_info(row)
+    return _to_mapping_info(row, resolve_display_names(db, [row.updated_by]))
 
 
 @router.delete("/mappings/{mapping_id}", summary="删除映射规则")
@@ -280,7 +285,8 @@ def list_bulk_products(
     rows = db.execute(
         select(RuleBulkProduct).order_by(RuleBulkProduct.id)
     ).scalars().all()
-    return [_to_bulk_info(b) for b in rows]
+    return [_to_bulk_info(b, resolve_display_names(db, (x.updated_by for x in rows)))
+            for b in rows]
 
 
 @router.post("/bulk-products", response_model=BulkProductInfo, summary="新增特殊产品")
@@ -311,7 +317,7 @@ def create_bulk_product(
                  f"新增特殊产品 {code}（{'启用' if body.enabled else '停用'}，"
                  f"颜色 {color}，差异说明 {note or '(默认)'}）", _client_ip(request), menu=MENU_MAP)
     db.commit()
-    return _to_bulk_info(row)
+    return _to_bulk_info(row, resolve_display_names(db, [row.updated_by]))
 
 
 @router.put("/bulk-products/{bulk_id}", response_model=BulkProductInfo, summary="修改特殊产品")
@@ -354,13 +360,13 @@ def update_bulk_product(
         changes.append(f"启用 {row.enabled}→{body.enabled}")
         row.enabled = body.enabled
     if not changes:
-        return _to_bulk_info(row)
+        return _to_bulk_info(row, resolve_display_names(db, [row.updated_by]))
 
     row.updated_by = user.username
     record_audit(db, user.username, "rule_bulk_update", "rule_bulk_product", str(row.id),
                  f"修改特殊产品 id={row.id}: " + "；".join(changes), _client_ip(request), menu=MENU_MAP)
     db.commit()
-    return _to_bulk_info(row)
+    return _to_bulk_info(row, resolve_display_names(db, [row.updated_by]))
 
 
 @router.delete("/bulk-products/{bulk_id}", summary="删除特殊产品")
@@ -394,7 +400,8 @@ def list_thresholds(
     rows = db.execute(
         select(RuleThreshold).order_by(RuleThreshold.id)
     ).scalars().all()
-    return [_to_threshold_info(t) for t in rows]
+    return [_to_threshold_info(t, resolve_display_names(db, (x.updated_by for x in rows)))
+            for t in rows]
 
 
 @router.put("/thresholds/{param_key}", response_model=ThresholdInfo, summary="修改阈值参数")
@@ -422,7 +429,7 @@ def update_threshold(
         record_audit(db, user.username, "rule_threshold_update", "rule_threshold", param_key,
                      f"阈值 {param_key}: (新增){body.value}", _client_ip(request), menu=MENU_BULK)
         db.commit()
-        return _to_threshold_info(row)
+        return _to_threshold_info(row, resolve_display_names(db, [row.updated_by]))
 
     old_value = row.param_value
     row.param_value = repr(body.value)
@@ -430,7 +437,7 @@ def update_threshold(
     record_audit(db, user.username, "rule_threshold_update", "rule_threshold", param_key,
                  f"阈值 {param_key}: {old_value}→{body.value}", _client_ip(request), menu=MENU_BULK)
     db.commit()
-    return _to_threshold_info(row)
+    return _to_threshold_info(row, resolve_display_names(db, [row.updated_by]))
 
 
 # =============================================================================
