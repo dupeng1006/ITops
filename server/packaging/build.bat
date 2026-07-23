@@ -9,7 +9,7 @@ rem ============================================================
 setlocal
 cd /d %~dp0\..
 set PY=.venv\Scripts\python.exe
-set VERSION=0.6.4
+set VERSION=0.6.5
 set PKGROOT=..\package
 set PKGDIR=%PKGROOT%\o32-ops-platform-v%VERSION%
 rem 便携 Node 路径（可用 set NODE_HOME=... 覆盖；默认为本机 kimi-desktop 内置运行时）
