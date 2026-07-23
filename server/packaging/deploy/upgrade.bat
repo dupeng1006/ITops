@@ -1,5 +1,5 @@
 @echo off
-chcp 936 >/dev/null
+chcp 936 >nul
 setlocal enabledelayedexpansion
 cd /d %~dp0
 title 安联资管运维管理平台 - 一键升级
@@ -37,22 +37,25 @@ rem ---------- 覆盖升级（数据保留） ----------
 echo 检测到已安装实例，执行【覆盖升级：仅更新程序，数据保留】
 echo.
 echo [1/4] 停止正在运行的服务 ...
-taskkill /F /IM o32-server.exe >/dev/null 2>&1
-timeout /t 2 /nobreak >/dev/null
+taskkill /F /IM o32-server.exe >nul 2>&1
+ping -n 3 127.0.0.1 >nul
 
 echo [2/4] 备份当前数据到 backups 目录 ...
-for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd-HHmmss"') do set "TS=%%I"
+set "TS=%RANDOM%%RANDOM%"
+where powershell >nul 2>&1
+if !ERRORLEVEL! EQU 0 for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd-HHmmss"') do set "TS=%%I"
 if not exist "%INSTALL_DIR%\backups" mkdir "%INSTALL_DIR%\backups"
-robocopy "%INSTALL_DIR%\data" "%INSTALL_DIR%\backups\data-!TS!" /E /COPY:DAT /R:2 /W:2 /NFL /NDL /NJH >/dev/null
+robocopy "%INSTALL_DIR%\data" "%INSTALL_DIR%\backups\data-!TS!" /E /COPY:DAT /R:2 /W:2 /NFL /NDL /NJH >nul
 echo   数据已备份到 backups\data-!TS!
 
 echo [3/4] 用新程序覆盖安装目录 app（数据目录不动）...
-robocopy "%NEW_DIR%\app" "%INSTALL_DIR%\app" /E /COPY:DAT /MIR /R:2 /W:2 /NFL /NDL /NJH >/dev/null
-if !ERRORLEVEL! GEQ 8 goto :error
+robocopy "%NEW_DIR%\app" "%INSTALL_DIR%\app" /E /COPY:DAT /MIR /R:2 /W:2 /NFL /NDL /NJH >nul
+set "RC=!ERRORLEVEL!"
+if !RC! GEQ 8 goto :error
 
 echo [4/4] 更新启动/停止等脚本 ...
 for %%F in (start.bat stop.bat install.bat uninstall.bat upgrade.bat) do (
-    if exist "%NEW_DIR%\%%F" copy /Y "%NEW_DIR%\%%F" "%INSTALL_DIR%\%%F" >/dev/null
+    if exist "%NEW_DIR%\%%F" copy /Y "%NEW_DIR%\%%F" "%INSTALL_DIR%\%%F" >nul
 )
 
 echo.
@@ -70,10 +73,10 @@ exit /b 0
 echo 未检测到已安装实例，执行【全新安装】到 %INSTALL_DIR% ...
 if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
 for %%D in (app data archive logs nssm) do (
-    if exist "%NEW_DIR%\%%D" robocopy "%NEW_DIR%\%%D" "%INSTALL_DIR%\%%D" /E /COPY:DAT /R:2 /W:2 /NFL /NDL /NJH >/dev/null
+    if exist "%NEW_DIR%\%%D" robocopy "%NEW_DIR%\%%D" "%INSTALL_DIR%\%%D" /E /COPY:DAT /R:2 /W:2 /NFL /NDL /NJH >nul
 )
 for %%F in (start.bat stop.bat install.bat uninstall.bat upgrade.bat) do (
-    if exist "%NEW_DIR%\%%F" copy /Y "%NEW_DIR%\%%F" "%INSTALL_DIR%\%%F" >/dev/null
+    if exist "%NEW_DIR%\%%F" copy /Y "%NEW_DIR%\%%F" "%INSTALL_DIR%\%%F" >nul
 )
 echo %INSTALL_DIR%>"%INSTALL_DIR%\install-dir.txt"
 echo.
