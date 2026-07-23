@@ -2,7 +2,7 @@
   <el-container class="layout">
     <el-header class="topbar" height="52px">
       <div class="topbar-left">
-        <BrandLogo :font-size="20" />
+        <BrandLogo variant="white" :height="30" />
         <span class="topbar-divider"></span>
         <span class="system-name">安联资管运维管理平台</span>
       </div>

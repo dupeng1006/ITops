@@ -2,7 +2,7 @@
   <div class="login-page">
     <el-card class="login-card" shadow="always">
       <div class="brand">
-        <BrandLogo color="#005EB8" :font-size="22" />
+        <BrandLogo variant="blue" :height="48" />
         <div class="brand-title">安联资管运维管理平台</div>
       </div>
       <el-alert
