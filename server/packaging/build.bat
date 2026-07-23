@@ -9,7 +9,7 @@ rem ============================================================
 setlocal
 cd /d %~dp0\..
 set PY=.venv\Scripts\python.exe
-set VERSION=0.6.8
+set VERSION=0.6.9
 set PKGROOT=..\package
 set PKGDIR=%PKGROOT%\o32-ops-platform-v%VERSION%
 rem 便携 Node 路径（可用 set NODE_HOME=... 覆盖；默认为本机 kimi-desktop 内置运行时）
@@ -43,6 +43,8 @@ echo [4/6] 组装部署目录 %PKGDIR% ...
 if exist "%PKGDIR%" rmdir /s /q "%PKGDIR%"
 mkdir "%PKGDIR%\app" "%PKGDIR%\data" "%PKGDIR%\archive" "%PKGDIR%\logs" "%PKGDIR%\nssm"
 xcopy /E /I /Q "dist\o32-server" "%PKGDIR%\app" >nul
+rem write version.txt for online-upgrade and page display
+echo %VERSION%>"%PKGDIR%\app\version.txt"
 xcopy /E /I /Q "..\client\dist" "%PKGDIR%\app\web" >nul
 copy /Y packaging\deploy\start.bat "%PKGDIR%\" >nul
 copy /Y packaging\deploy\stop.bat "%PKGDIR%\" >nul

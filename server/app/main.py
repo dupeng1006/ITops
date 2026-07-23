@@ -43,6 +43,7 @@ from app.api import (
     routes_system,
     routes_task,
     routes_trello,
+    routes_upgrade,
 )
 from app.core.config import get_settings
 from app.models.database import get_engine, init_database
@@ -65,6 +66,8 @@ async def lifespan(app: FastAPI):
     init_database(settings.DB_PATH)
     run_migrations(get_engine())
     schedule_service.init_scheduler()
+    # 在线升级启动确认：若上次由页面上传包触发了升级，核对版本并审计留痕
+    routes_upgrade.confirm_pending_upgrade()
     logger.info("安联资管运维管理平台服务端启动完成（M1/M2/M3 核对 + 数据源管理 + 系统配置 + 任务调度中心 + 统计看板 + 数据字典）")
     yield
     schedule_service.shutdown_scheduler()
@@ -89,6 +92,7 @@ app.include_router(routes_task.router)
 app.include_router(routes_dashboard.router)
 app.include_router(routes_dict.router)
 app.include_router(routes_trello.router)
+app.include_router(routes_upgrade.router)
 
 
 @app.get("/api/health", tags=["系统"], summary="健康检查")

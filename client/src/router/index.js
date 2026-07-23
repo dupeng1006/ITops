@@ -20,6 +20,7 @@ const routes = [
       { path: 'datasource/connections', name: 'ds-connections', component: () => import('../views/DatasourceView.vue'), meta: { title: '数据源连接配置', roles: ['admin'] } },
       { path: 'datasource/templates', name: 'ds-templates', component: () => import('../views/QueryTemplatesView.vue'), meta: { title: '查询模板管理', roles: ['admin'] } },
       { path: 'system/config', name: 'system-config', component: () => import('../views/SystemConfigView.vue'), meta: { title: '系统配置', roles: ['admin'] } },
+      { path: 'system/upgrade', name: 'system-upgrade', component: () => import('../views/UpgradeView.vue'), meta: { title: '版本升级', roles: ['admin'] } },
       { path: 'users', name: 'users', component: () => import('../views/UsersView.vue'), meta: { title: '用户维护', roles: ['admin'] } },
       { path: 'audit-logs', name: 'audit-logs', component: () => import('../views/AuditLogView.vue'), meta: { title: '系统日志查询', roles: ['admin'] } },
       { path: 'trello/board', name: 'trello-board', component: () => import('../views/TrelloBoardView.vue'), meta: { title: 'Trello 工作看板', roles: ['admin', 'operator', 'viewer'] } },

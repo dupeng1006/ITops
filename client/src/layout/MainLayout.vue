@@ -53,6 +53,7 @@
             <el-menu-item index="/system/config">系统配置</el-menu-item>
             <el-menu-item index="/users">用户维护</el-menu-item>
             <el-menu-item index="/audit-logs">系统日志查询</el-menu-item>
+            <el-menu-item index="/system/upgrade">版本升级</el-menu-item>
           </el-sub-menu>
           <el-sub-menu v-if="isAdmin" index="trello">
             <template #title><el-icon><CollectionTag /></el-icon><span>Trello 工作看板</span></template>
