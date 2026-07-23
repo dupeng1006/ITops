@@ -30,7 +30,9 @@
             <el-switch :model-value="row.enabled" @change="(v) => toggle(row, v)" />
           </template>
         </el-table-column>
-        <el-table-column prop="updated_by" label="修改人" width="100" />
+        <el-table-column label="修改人" width="100">
+          <template #default="{ row }">{{ fmtUpdater(row) }}</template>
+        </el-table-column>
         <el-table-column label="操作" width="300" fixed="right">
           <template #default="{ row }">
             <el-button text type="primary" size="small" :loading="testingId === row.id" @click="onTest(row)">测试连接</el-button>
@@ -77,6 +79,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import api from '../api'
+import { fmtUpdater } from '../utils/display'
 
 const rows = ref([])
 const loading = ref(false)

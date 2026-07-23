@@ -23,7 +23,9 @@
             <el-switch :model-value="row.enabled" @change="(v) => toggle(row, v)" />
           </template>
         </el-table-column>
-        <el-table-column prop="updated_by" label="修改人" width="100" />
+        <el-table-column label="修改人" width="100">
+          <template #default="{ row }">{{ fmtUpdater(row) }}</template>
+        </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button text type="primary" size="small" @click="openPreview(row)">预览</el-button>
@@ -131,6 +133,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import api from '../api'
+import { fmtUpdater } from '../utils/display'
 
 const modules = [
   { value: 'm1_fund', label: 'M1 基金资产表' },

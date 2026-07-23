@@ -11,6 +11,16 @@
             </el-option>
           </el-select>
           <el-input v-model="search" placeholder="搜索卡片标题" clearable style="width: 220px" @input="applyFilter" />
+          <el-select
+            v-if="groupedBoards.length > 4"
+            v-model="navBoard"
+            placeholder="看板快速定位"
+            clearable
+            style="width: 200px"
+            @change="scrollToBoard"
+          >
+            <el-option v-for="b in groupedBoards" :key="b.board_id" :label="b.name" :value="b.board_id" />
+          </el-select>
           <el-button @click="resetFilter">重置</el-button>
           <el-button type="primary" :loading="syncing" @click="syncAll">立即同步</el-button>
         </div>
@@ -34,7 +44,7 @@
     </div>
 
     <div v-else class="boards">
-      <el-card v-for="board in groupedBoards" :key="board.board_id" shadow="never" class="board-card">
+      <el-card v-for="board in groupedBoards" :key="board.board_id" :id="`board-anchor-${board.board_id}`" shadow="never" class="board-card">
         <template #header>
           <div class="board-header">
             <span class="board-title">📋 {{ board.name }}</span>
@@ -50,7 +60,7 @@
                   {{ statusLabel(card.status) }}
                 </div>
                 <div class="card-title">{{ card.name }}</div>
-                <div class="card-desc">{{ card.desc || '无描述' }}</div>
+                <div class="card-desc" v-html="descHtml(card.desc)"></div>
                 <div class="card-meta">
                   <span v-for="(label, idx) in otherLabels(card.labels_json)" :key="idx" class="label" :style="{ backgroundColor: label.color }">
                     {{ label.name }}
@@ -80,6 +90,18 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import api from '../api'
+import { renderMarkdownLite } from '../utils/markdownLite'
+
+const navBoard = ref(null)
+
+function descHtml(desc) {
+  return desc ? renderMarkdownLite(desc) : '无描述'
+}
+
+function scrollToBoard(boardId) {
+  if (!boardId) return
+  document.getElementById(`board-anchor-${boardId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 
 const STATUS_MAP = {
   'Done': { label: '已完成', color: '#67c23a' },
@@ -272,10 +294,11 @@ onMounted(loadCards)
 .summary-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; font-size: 12px; color: #fff; font-weight: 500; }
 .summary-badge b { margin-left: 4px; }
 .boards { display: flex; flex-direction: column; gap: 16px; }
-.board-card { overflow: hidden; }
+.board-card { overflow: hidden; scroll-margin-top: 16px; }
 .board-header { display: flex; justify-content: space-between; align-items: center; }
 .board-title { font-size: 16px; font-weight: 600; color: #303133; }
-.lists { display: flex; gap: 16px; overflow-x: auto; padding: 4px 0 10px; }
+/* 列高由卡片内容决定（flex-start 不再拉伸短列），横向滚动条紧贴看板内容底部 */
+.lists { display: flex; gap: 16px; overflow-x: auto; padding: 4px 0 10px; align-items: flex-start; }
 .list { min-width: 280px; max-width: 320px; background: #f5f7fa; border-radius: 8px; padding: 12px; flex-shrink: 0; }
 .list-header { font-size: 14px; font-weight: 600; color: #303133; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e4e7ed; }
 .list-count { color: #909399; font-weight: 400; }
@@ -283,7 +306,9 @@ onMounted(loadCards)
 .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 .card-status { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 12px; font-size: 12px; color: #fff; font-weight: 600; margin-bottom: 8px; }
 .card-title { font-size: 14px; font-weight: 500; color: #303133; line-height: 1.4; }
-.card-desc { font-size: 12px; color: #909399; margin-top: 6px; line-height: 1.5; }
+.card-desc { font-size: 12px; color: #909399; margin-top: 6px; line-height: 1.5; word-break: break-word; overflow-wrap: anywhere; }
+.card-desc :deep(a) { color: #409eff; text-decoration: none; word-break: break-all; }
+.card-desc :deep(a:hover) { text-decoration: underline; }
 .card-meta { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .label { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; color: #fff; font-weight: 500; }
 .due { font-size: 12px; padding: 2px 8px; border-radius: 12px; background: #f0f2f5; }

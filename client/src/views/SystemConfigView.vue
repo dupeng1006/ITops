@@ -54,7 +54,9 @@
             <el-switch :model-value="row.enabled" @change="(v) => toggle(row, v)" />
           </template>
         </el-table-column>
-        <el-table-column prop="updated_by" label="修改人" width="110" />
+        <el-table-column label="修改人" width="110">
+          <template #default="{ row }">{{ fmtUpdater(row) }}</template>
+        </el-table-column>
         <el-table-column prop="updated_at" label="修改时间" width="160" />
         <el-table-column label="操作" width="130">
           <template #default="{ row }">
@@ -107,6 +109,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import api from '../api'
+import { fmtUpdater } from '../utils/display'
 
 const presetFields = ['市价', '单位成本', '成本']
 const rules = ref([])

@@ -26,7 +26,9 @@
                 <el-switch :model-value="row.enabled" @change="(v) => toggleMapping(row, v)" />
               </template>
             </el-table-column>
-            <el-table-column prop="updated_by" label="修改人" width="110" />
+            <el-table-column label="修改人" width="110">
+              <template #default="{ row }">{{ fmtUpdater(row) }}</template>
+            </el-table-column>
             <el-table-column prop="updated_at" label="修改时间" width="160" />
             <el-table-column label="操作" width="130">
               <template #default="{ row }">
@@ -68,7 +70,9 @@
                 <el-switch :model-value="row.enabled" @change="(v) => toggleBulk(row, v)" />
               </template>
             </el-table-column>
-            <el-table-column prop="updated_by" label="修改人" width="110" />
+            <el-table-column label="修改人" width="110">
+              <template #default="{ row }">{{ fmtUpdater(row) }}</template>
+            </el-table-column>
             <el-table-column prop="updated_at" label="修改时间" width="160" />
             <el-table-column label="操作" width="130">
               <template #default="{ row }">
@@ -90,7 +94,9 @@
             <el-table-column label="合法范围" width="140">
               <template #default="{ row }">{{ rangeText(row.param_key) }}</template>
             </el-table-column>
-            <el-table-column prop="updated_by" label="修改人" width="110" />
+            <el-table-column label="修改人" width="110">
+              <template #default="{ row }">{{ fmtUpdater(row) }}</template>
+            </el-table-column>
             <el-table-column prop="updated_at" label="修改时间" width="160" />
             <el-table-column label="操作" width="90">
               <template #default="{ row }">
@@ -188,6 +194,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Download, Upload, UploadFilled } from '@element-plus/icons-vue'
 import api, { downloadFile } from '../api'
+import { fmtUpdater } from '../utils/display'
 
 const tab = ref('mappings')
 const mappings = ref([])
