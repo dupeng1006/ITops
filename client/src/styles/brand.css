@@ -1,0 +1,13 @@
+/* 安联品牌色规范：Element Plus 主色覆盖（须在 element-plus/dist/index.css 之后引入） */
+:root {
+  /* 品牌主蓝 #005EB8 */
+  --el-color-primary: #005EB8;
+  /* 浅色系：#005EB8 与白色按比例混合 */
+  --el-color-primary-light-3: #4d8ecd;
+  --el-color-primary-light-5: #80afdc;
+  --el-color-primary-light-7: #b3cfea;
+  --el-color-primary-light-8: #ccdff1;
+  --el-color-primary-light-9: #eaf3fb;
+  /* 深色系：#005EB8 与黑色按 20% 混合 */
+  --el-color-primary-dark-2: #004b93;
+}

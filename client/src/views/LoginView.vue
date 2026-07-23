@@ -2,6 +2,7 @@
   <div class="login-page">
     <el-card class="login-card" shadow="always">
       <div class="brand">
+        <BrandLogo color="#005EB8" :font-size="22" />
         <div class="brand-title">安联资管运维管理平台</div>
       </div>
       <el-alert
@@ -57,6 +58,7 @@ import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 import api from '../api'
 import { setAuth } from '../utils/auth'
+import BrandLogo from '../components/BrandLogo.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -159,14 +161,14 @@ function finishLogin(data) {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1f3a5f 0%, #2c5282 60%, #3182ce 100%);
+  background: linear-gradient(135deg, #003781 0%, #005eb8 60%, #2f86d6 100%);
 }
 .login-card {
   width: 400px;
   border-radius: 8px;
 }
 .brand { text-align: center; margin-bottom: 24px; }
-.brand-title { font-size: 22px; font-weight: 600; color: #1f3a5f; }
+.brand-title { font-size: 20px; font-weight: 600; color: #003781; margin-top: 12px; }
 .login-error { margin-bottom: 16px; }
 .login-btn { width: 100%; }
 .login-tip { text-align: center; font-size: 12px; color: #a0aec0; }
