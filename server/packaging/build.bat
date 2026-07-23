@@ -51,6 +51,7 @@ copy /Y packaging\deploy\stop.bat "%PKGDIR%\" >nul
 copy /Y packaging\deploy\install.bat "%PKGDIR%\" >nul
 copy /Y packaging\deploy\uninstall.bat "%PKGDIR%\" >nul
 copy /Y packaging\deploy\upgrade.bat "%PKGDIR%\" >nul
+copy /Y packaging\deploy\start-hidden.vbs "%PKGDIR%\" >nul
 if exist packaging\nssm\nssm.exe copy /Y packaging\nssm\nssm.exe "%PKGDIR%\nssm\" >nul
 if exist packaging\nssm\README.txt copy /Y packaging\nssm\README.txt "%PKGDIR%\nssm\" >nul
 rem 数据字典库随包预置（PDM 已导入成果，目标机开箱即可查询；亦可在平台上重新导入覆盖）
