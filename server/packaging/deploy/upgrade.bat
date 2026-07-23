@@ -1,154 +1,93 @@
 @echo off
-rem ============================================================
-rem  O32 日常运维平台 - 版本升级数据迁移工具
-rem
-rem  标准升级流程：
-rem    1. 停止旧版本服务（关闭旧窗口或运行旧目录 stop.bat）
-rem    2. 把新版本压缩包解压到旧版本【同级】目录
-rem    3. 进入新版本目录，运行本脚本：upgrade.bat [旧版本目录]
-rem       （不带参数时会自动列出同级旧版本供选择）
-rem    4. 运行 start.bat 启动新版本
-rem
-rem  迁移内容：data（平台库/密钥/规则/模板/字典库）、
-rem            archive（核对归档）、logs（运行日志）
-rem  安全保障：旧目录原样保留作为回滚备份，
-rem            确认新版本运行正常后可手动删除旧目录。
-rem ============================================================
+chcp 936 >/dev/null
 setlocal enabledelayedexpansion
 cd /d %~dp0
+title 安联资管运维管理平台 - 一键升级
+
+rem ============================================================
+rem  覆盖式一键升级：只更新程序，数据（账号/规则/模板/数据源/
+rem  Trello/历史任务/归档/字典）原地保留，无需手动迁移。
+rem  用法：解压新版包到任意位置，双击本脚本即可（自动定位）。
+rem  安装目录默认 D:\O32-Ops；若不同，用 install-dir.txt 指定
+rem  或作为第一个参数传入：upgrade.bat 安装目录
+rem ============================================================
+
+set "NEW_DIR=%CD%"
+set "INSTALL_DIR=D:\O32-Ops"
+if not "%~1"=="" set "INSTALL_DIR=%~f1"
+if exist "%INSTALL_DIR%\install-dir.txt" set /p INSTALL_DIR=<"%INSTALL_DIR%\install-dir.txt"
 
 echo ============================================================
-echo  O32 日常运维平台 - 升级数据迁移
-echo  新版本目录: %CD%
+echo  安联资管运维管理平台 - 一键升级（数据自动保留）
 echo ============================================================
+echo   新版本程序: %NEW_DIR%\app
+echo   安装目录  : %INSTALL_DIR%
 echo.
 
-if not "%~1"=="" (
-    set "OLD_DIR=%~f1"
-    goto :check_old
-)
-
-rem 自动探测同级旧版本目录
-set N=0
-for /d %%D in ("%~dp0..\o32-ops-platform-v*") do (
-    if /i not "%%~fD"=="%CD%" (
-        set /a N+=1
-        set "OLD!N!=%%~fD"
-        echo   [!N!] %%~nxD
-    )
-)
-if %N% EQU 0 (
-    echo [错误] 未在同级目录找到旧版本（o32-ops-platform-v*）
-    echo 请将新版本解压到旧版本同级目录，或用 upgrade.bat 旧目录路径 指定
+if not exist "%NEW_DIR%\app\o32-server.exe" (
+    echo [错误] 未找到新程序 %NEW_DIR%\app\o32-server.exe
+    echo 请在新版本解压目录内运行本脚本
     pause
     exit /b 1
 )
-echo.
-set /p PICK=请输入旧版本序号、目录名或完整路径（1-%N%）：
-if "%PICK%"=="" goto :bad_pick
-set "PICK=%PICK:"=%"
-rem 方式 1：序号（仅纯数字按序号解析，防止路径盘符冒号被 !var! 展开截断）
-set "NONNUM="
-for /f "delims=0123456789" %%X in ("%PICK%") do set "NONNUM=%%X"
-if not defined NONNUM (
-    set "OLD_DIR=!OLD%PICK%!"
-)
-if defined OLD_DIR goto :check_old
-rem 方式 2：完整路径
-if exist "%PICK%\data" (
-    set "OLD_DIR=%PICK%"
-    goto :check_old
-)
-rem 方式 3：目录名（与列表项匹配）
-for /d %%D in ("%~dp0..\o32-ops-platform-v*") do (
-    if /i "%%~nxD"=="%PICK%" (
-        set "OLD_DIR=%%~fD"
-        goto :check_old
-    )
-)
-goto :bad_pick
 
-:bad_pick
-echo [错误] 无效输入，请输入列表中的序号、目录名或完整路径
+if not exist "%INSTALL_DIR%\app\o32-server.exe" goto :fresh
+
+rem ---------- 覆盖升级（数据保留） ----------
+echo 检测到已安装实例，执行【覆盖升级：仅更新程序，数据保留】
+echo.
+echo [1/4] 停止正在运行的服务 ...
+taskkill /F /IM o32-server.exe >/dev/null 2>&1
+timeout /t 2 /nobreak >/dev/null
+
+echo [2/4] 备份当前数据到 backups 目录 ...
+for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd-HHmmss"') do set "TS=%%I"
+if not exist "%INSTALL_DIR%\backups" mkdir "%INSTALL_DIR%\backups"
+robocopy "%INSTALL_DIR%\data" "%INSTALL_DIR%\backups\data-!TS!" /E /COPY:DAT /R:2 /W:2 /NFL /NDL /NJH >/dev/null
+echo   数据已备份到 backups\data-!TS!
+
+echo [3/4] 用新程序覆盖安装目录 app（数据目录不动）...
+robocopy "%NEW_DIR%\app" "%INSTALL_DIR%\app" /E /COPY:DAT /MIR /R:2 /W:2 /NFL /NDL /NJH >/dev/null
+if !ERRORLEVEL! GEQ 8 goto :error
+
+echo [4/4] 更新启动/停止等脚本 ...
+for %%F in (start.bat stop.bat install.bat uninstall.bat upgrade.bat) do (
+    if exist "%NEW_DIR%\%%F" copy /Y "%NEW_DIR%\%%F" "%INSTALL_DIR%\%%F" >/dev/null
+)
+
+echo.
+echo ============================================================
+echo  升级完成！数据已自动保留，无需手动迁移：
+echo  账号 / 规则 / 模板 / 数据源 / Trello / 历史任务 / 归档均在
+echo  旧数据已备份到 %INSTALL_DIR%\backups\
+echo  首次启动会自动完成数据库结构升级（启动日志可见）
+echo  请运行 %INSTALL_DIR%\start.bat 启动
+echo ============================================================
 pause
-exit /b 1
+exit /b 0
 
-:check_old
-echo 旧版本目录: %OLD_DIR%
-if not exist "%OLD_DIR%\data" (
-    echo [错误] 旧目录下没有 data 文件夹，请确认路径是否正确
-    pause
-    exit /b 1
+:fresh
+echo 未检测到已安装实例，执行【全新安装】到 %INSTALL_DIR% ...
+if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
+for %%D in (app data archive logs nssm) do (
+    if exist "%NEW_DIR%\%%D" robocopy "%NEW_DIR%\%%D" "%INSTALL_DIR%\%%D" /E /COPY:DAT /R:2 /W:2 /NFL /NDL /NJH >/dev/null
 )
-if not exist "%OLD_DIR%\data\o32ops.db" (
-    echo [警告] 旧目录 data 下没有平台库 o32ops.db（旧版可能从未运行过）
-    set /p NOGO=仍要继续迁移吗？（Y/N）:
-    if /i not "!NOGO!"=="Y" exit /b 1
+for %%F in (start.bat stop.bat install.bat uninstall.bat upgrade.bat) do (
+    if exist "%NEW_DIR%\%%F" copy /Y "%NEW_DIR%\%%F" "%INSTALL_DIR%\%%F" >/dev/null
 )
-echo.
-echo 请确认：旧版本服务已停止（旧窗口已关闭 / 已运行旧目录 stop.bat / 服务已停用）
-set /p OK=确认已停止？（Y/N）:
-if /i not "%OK%"=="Y" (
-    echo 已取消。请先停止旧版本服务后重新运行本脚本
-    pause
-    exit /b 1
-)
-echo.
-
-rem 字典库策略：旧目录已有 dictionary.db（可能含后续导入成果）优先保留；
-rem 新包预置版重命名为 dictionary.db.pkg 备份，不强制覆盖
-if exist "%OLD_DIR%\data\dictionary.db" (
-    if exist "data\dictionary.db" (
-        ren "data\dictionary.db" "dictionary.db.pkg"
-        echo 已保留旧版字典库；新包预置字典备份为 data\dictionary.db.pkg
-    )
-)
-
-rem 清除新版本可能残留的测试数据库和密钥（打包测试时可能生成）
-rem 确保从旧版本迁移真实数据，避免 robocopy 因目标文件较新而跳过
-if exist "data\o32ops.db" del /f /q "data\o32ops.db" >nul 2>&1
-if exist "data\o32ops.db-shm" del /f /q "data\o32ops.db-shm" >nul 2>&1
-if exist "data\o32ops.db-wal" del /f /q "data\o32ops.db-wal" >nul 2>&1
-if exist "data\secret.key" del /f /q "data\secret.key" >nul 2>&1
-
-echo [1/3] 迁移数据目录 data（平台库/密钥/规则/模板/字典库）...
-robocopy "%OLD_DIR%\data" "data" /E /COPY:DAT /R:2 /W:2 /NFL /NDL /NJH
-if %ERRORLEVEL% GEQ 8 goto :error
-
-echo [2/3] 迁移归档目录 archive（核对原件与结果）...
-if exist "%OLD_DIR%\archive" (
-    robocopy "%OLD_DIR%\archive" "archive" /E /COPY:DAT /R:2 /W:2 /NFL /NDL /NJH
-    if !ERRORLEVEL! GEQ 8 goto :error
-) else (
-    echo   旧目录无 archive，跳过
-)
-
-echo [3/3] 迁移日志目录 logs...
-if exist "%OLD_DIR%\logs" (
-    robocopy "%OLD_DIR%\logs" "logs" /E /COPY:DAT /R:2 /W:2 /NFL /NDL /NJH
-    if !ERRORLEVEL! GEQ 8 goto :error
-) else (
-    echo   旧目录无 logs，跳过
-)
-
+echo %INSTALL_DIR%>"%INSTALL_DIR%\install-dir.txt"
 echo.
 echo ============================================================
-echo  升级数据迁移完成！
-echo ============================================================
-echo  - 用户、规则、模板、数据源、历史任务、归档文件已全部迁移
-echo  - 首次启动时服务端会自动完成数据库结构升级（启动日志可见）
-echo  - 旧目录已原样保留作为回滚备份：
-echo      %OLD_DIR%
-echo    确认新版本运行正常后，可手动删除旧目录释放空间
-echo.
-echo  现在请运行 start.bat 启动新版本
+echo  全新安装完成！数据目录已固定在 %INSTALL_DIR%\data
+echo  今后升级只更新程序、数据原地保留，不会再丢失
+echo  请运行 %INSTALL_DIR%\start.bat 启动
 echo ============================================================
 pause
 exit /b 0
 
 :error
 echo.
-echo [错误] 迁移过程中断（robocopy 错误码 %ERRORLEVEL%）
-echo 新旧目录数据未被破坏，请检查磁盘空间与文件占用后重试
+echo [错误] 升级中断，robocopy 错误码 !ERRORLEVEL!
+echo 新旧目录数据均未被破坏，请检查磁盘空间与文件占用后重试
 pause
 exit /b 1
