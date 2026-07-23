@@ -49,6 +49,16 @@ def _table_columns(engine: Engine, table: str) -> set:
     return {r[1] for r in rows}
 
 
+def _table_exists(engine: Engine, table: str) -> bool:
+    """判断表是否存在（sqlite_master）"""
+    with engine.connect() as conn:
+        row = conn.execute(
+            text("SELECT name FROM sqlite_master WHERE type='table' AND name=:t"),
+            {"t": table},
+        ).fetchone()
+    return row is not None
+
+
 def _migrate_v2(engine: Engine) -> None:
     """v1 → v2：rule_bulk_product 增加 color 列 + 清理历史占位说明"""
     columns = _table_columns(engine, "rule_bulk_product")
@@ -111,6 +121,9 @@ def _migrate_v4(engine: Engine) -> None:
 
 def _migrate_v5(engine: Engine) -> None:
     """v4 → v5：sys_audit_log 增加 mac / menu 两列（可空，存量无损）"""
+    if not _table_exists(engine, "sys_audit_log"):
+        logger.info("迁移 v5: sys_audit_log 表不存在（由建表流程负责创建），跳过加列")
+        return
     columns = _table_columns(engine, "sys_audit_log")
     with engine.begin() as conn:
         for col, ddl in (

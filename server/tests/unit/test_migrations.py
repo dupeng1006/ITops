@@ -39,6 +39,9 @@ os.environ["O32OPS_SECRET_KEY"] = "migrations-test-secret-key-do-not-use-in-prod
 if str(SERVER_ROOT) not in sys.path:
     sys.path.insert(0, str(SERVER_ROOT))
 
+# 期望已登记迁移版本（新增迁移时只需改这一处常量）
+EXPECTED_VERSIONS = [2, 3, 4, 5, 6]
+
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 except Exception:  # noqa: BLE001
@@ -115,9 +118,14 @@ def test_legacy_db_migration() -> None:
     check("A6 真实说明保留",
           rows["AZ0205"]["description"] == "月末大额申赎(真实说明)",
           str(rows["AZ0205"]["description"]))
+    audit_exists = conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='sys_audit_log'"
+    ).fetchone() is not None
+    check("A8 旧库缺 sys_audit_log 时 v5 跳过不崩溃（建表流程兜底）",
+          True, "run_migrations 已完整执行")
     versions = [r[0] for r in conn.execute(
         "SELECT version FROM schema_version ORDER BY version").fetchall()]
-    check("A7 schema_version 登记 v2/v3/v4", versions == [2, 3, 4], str(versions))
+    check("A7 schema_version 登记全部版本", versions == EXPECTED_VERSIONS, str(versions))
     conn.close()
 
     # ---- B. 幂等：重复执行 ----
@@ -134,7 +142,7 @@ def test_legacy_db_migration() -> None:
           == [("AZ0205", "月末大额申赎(真实说明)", "FFC000"),
               ("AZ0206", None, "FFC000")],
           str(rows2))
-    check("B2 重复执行版本不重复登记", len(versions2) == 3, str(versions2))
+    check("B2 重复执行版本不重复登记", len(versions2) == len(EXPECTED_VERSIONS), str(versions2))
 
 
 def test_fresh_db_migration() -> None:
@@ -157,7 +165,7 @@ def test_fresh_db_migration() -> None:
     rows = conn.execute(
         "SELECT product_code, description, color FROM rule_bulk_product").fetchall()
     conn.close()
-    check("C2 新库迁移登记 v2/v3/v4", versions == [2, 3, 4], str(versions))
+    check("C2 新库迁移登记全部版本", versions == EXPECTED_VERSIONS, str(versions))
     check("C3 新库初始导入 11 个特殊产品（note 空 + color FFC000）",
           len(rows) == 11
           and all(r[1] is None and r[2] == "FFC000" for r in rows),
@@ -238,14 +246,14 @@ def test_v3_user_columns() -> None:
     conn.close()
     check("D3 存量 admin 行保留且新列 NULL",
           row == ("admin", None, None), str(row))
-    check("D4 schema_version 登记 v2/v3/v4", versions == [2, 3, 4], str(versions))
+    check("D4 schema_version 登记全部版本", versions == EXPECTED_VERSIONS, str(versions))
     rm(engine)  # 幂等重跑
     conn = sqlite3.connect(str(db_path))
     cnt = conn.execute("SELECT COUNT(*) FROM schema_version").fetchone()[0]
     row2 = conn.execute("SELECT username, display_name, department FROM sys_user").fetchone()
     conn.close()
     check("D5 重复执行幂等（版本不重复、数据不变）",
-          cnt == 3 and row2 == ("admin", None, None), f"cnt={cnt} row={row2}")
+          cnt == len(EXPECTED_VERSIONS) and row2 == ("admin", None, None), f"cnt={cnt} row={row2}")
     engine.dispose()
 
 
