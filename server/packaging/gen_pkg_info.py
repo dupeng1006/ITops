@@ -66,6 +66,21 @@ LICENSE_MAP = {
 }
 
 CHANGELOG = """\
+v0.6.4（2026-07-23）Trello 工作看板集成（只读）
+  - 新增「Trello 工作看板」模块：左侧菜单新增入口，配置页 + 工作看板页
+  - 连接配置：admin 维护 API Key + Token（Token Fernet 加密存储，接口永不
+    返回明文）；支持测试连接、手动同步、启用/停用、自动定时同步（按
+    sync_min 分钟间隔）
+  - 只读同步：拉取当前用户加入的 boards 和分配给我的卡片，写入本地
+    SQLite 缓存（trello_board / trello_card）；v0.6.4 不写回 Trello
+  - 状态字段：按 Trello 标签取值（Done/Suspended/Help/Delayed/Not Started/
+    Ongoing/Closed），未匹配显示「未设置状态」；支持状态下拉筛选、搜索、
+    按 Board→List 分组展示、状态分布统计、已逾期高亮
+  - 后端新增：trello_config / trello_board / trello_card 表 + schema 迁移 v6、
+    trello_client / trello_service 服务、routes_trello 8 个接口；
+    所有写操作/测试/同步均审计留痕
+  - 升级数据保留：upgrade.bat 已包含清理残留测试库步骤；build.bat 打包前
+    自动清除 o32ops.db/secret.key/server.log 等测试文件
 v0.6.3（2026-07-22）系统日志查询 + 审计 MAC/操作菜单记录
   - 系统管理下新增「系统日志查询」页：操作人员（编号/姓名/部门）、
     IP 与 MAC 分列展示、操作菜单、操作类型、明细；支持操作人/菜单/

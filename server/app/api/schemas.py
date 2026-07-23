@@ -603,3 +603,83 @@ class AuditLogListResponse(BaseModel):
     page: int
     page_size: int
     items: List[AuditLogInfo]
+
+
+# =============================================================================
+# Trello 集成（v0.6.4）
+# =============================================================================
+
+class TrelloConfigCreateRequest(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100, description="配置名称（唯一）")
+    api_key: str = Field(..., min_length=1, max_length=200, description="Trello API Key")
+    token: str = Field(..., min_length=1, max_length=300, description="Trello Token（服务端加密存储）")
+    enabled: bool = Field(True, description="是否启用同步")
+    sync_min: int = Field(5, ge=1, le=1440, description="同步间隔分钟数")
+
+
+class TrelloConfigUpdateRequest(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=100, description="配置名称")
+    api_key: Optional[str] = Field(None, min_length=1, max_length=200, description="Trello API Key")
+    token: Optional[str] = Field(None, min_length=1, max_length=300, description="Trello Token；留空/null 表示不修改")
+    enabled: Optional[bool] = Field(None, description="是否启用同步")
+    sync_min: Optional[int] = Field(None, ge=1, le=1440, description="同步间隔分钟数")
+
+
+class TrelloConfigInfo(BaseModel):
+    id: int
+    name: str
+    api_key: str
+    token: str = Field(..., description="Token 掩码（恒定 ********，无明文）")
+    enabled: bool
+    sync_min: int
+    last_sync_at: Optional[str] = None
+    last_sync_status: Optional[str] = None
+    last_sync_error: Optional[str] = None
+    updated_by: Optional[str] = None
+    updated_at: str
+    created_at: str
+
+
+class TrelloBoardInfo(BaseModel):
+    id: int
+    config_id: int
+    board_id: str
+    name: str
+    url: Optional[str] = None
+    is_closed: bool
+    synced_at: str
+
+
+class TrelloCardInfo(BaseModel):
+    id: int
+    config_id: int
+    card_id: str
+    board_id: str
+    board_name: Optional[str] = None
+    list_id: str
+    list_name: Optional[str] = None
+    name: str
+    desc: Optional[str] = None
+    status: Optional[str] = Field(None, description="状态标签（Done/Suspended/Help/Delayed/Not Started/Ongoing/Closed）")
+    due_date: Optional[str] = None
+    due_complete: bool
+    labels_json: Optional[str] = None
+    members_json: Optional[str] = None
+    url: Optional[str] = None
+    pos: Optional[float] = None
+    synced_at: str
+
+
+class TrelloCardListResponse(BaseModel):
+    total: int
+    page: int
+    page_size: int
+    items: List[TrelloCardInfo]
+
+
+class TrelloSyncResponse(BaseModel):
+    success: bool
+    message: str
+    boards: int = 0
+    cards: int = 0
+    elapsed_ms: Optional[int] = None

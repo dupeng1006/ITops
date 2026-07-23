@@ -124,12 +124,77 @@ def _migrate_v5(engine: Engine) -> None:
                 logger.info(f"迁移 v5: {col} 列已存在，跳过（幂等）")
 
 
+def _migrate_v6(engine: Engine) -> None:
+    """v5 → v6：新增 Trello 集成三张表（trello_config / trello_board / trello_card）"""
+    tables = {
+        "trello_config": """
+            CREATE TABLE trello_config (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name VARCHAR(100) NOT NULL UNIQUE,
+                api_key VARCHAR(200) NOT NULL,
+                token_enc TEXT NOT NULL,
+                enabled BOOLEAN NOT NULL DEFAULT 1,
+                sync_min INTEGER NOT NULL DEFAULT 5,
+                last_sync_at DATETIME,
+                last_sync_status VARCHAR(20),
+                last_sync_error TEXT,
+                updated_by VARCHAR(50),
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """,
+        "trello_board": """
+            CREATE TABLE trello_board (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                config_id INTEGER NOT NULL,
+                board_id VARCHAR(50) NOT NULL,
+                name VARCHAR(200) NOT NULL,
+                url VARCHAR(500),
+                is_closed BOOLEAN NOT NULL DEFAULT 0,
+                synced_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """,
+        "trello_card": """
+            CREATE TABLE trello_card (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                config_id INTEGER NOT NULL,
+                card_id VARCHAR(50) NOT NULL,
+                board_id VARCHAR(50) NOT NULL,
+                board_name VARCHAR(200),
+                list_id VARCHAR(50) NOT NULL,
+                list_name VARCHAR(200),
+                name VARCHAR(500) NOT NULL,
+                desc TEXT,
+                status VARCHAR(50),
+                due_date DATETIME,
+                due_complete BOOLEAN NOT NULL DEFAULT 0,
+                labels_json TEXT,
+                members_json TEXT,
+                url VARCHAR(500),
+                pos FLOAT,
+                synced_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """,
+    }
+    with engine.begin() as conn:
+        for table_name, ddl in tables.items():
+            columns = _table_columns(engine, table_name)
+            if not columns:
+                conn.execute(text(ddl))
+                if table_name in ("trello_board", "trello_card"):
+                    conn.execute(text(f"CREATE INDEX idx_{table_name}_config_id ON {table_name}(config_id)"))
+                logger.info(f"迁移 v6: {table_name} 表已创建")
+            else:
+                logger.info(f"迁移 v6: {table_name} 表已存在，跳过（幂等）")
+
+
 # 有序迁移列表（version 严格递增，禁止插序/改序）
 SCHEMA_MIGRATIONS: List[Migration] = [
     (2, "rule_bulk_product 增加 color 列并清理历史占位说明", _migrate_v2),
     (3, "sys_user 增加 display_name / department 两列", _migrate_v3),
     (4, "新增 dict_favorite 数据字典表收藏", _migrate_v4),
     (5, "sys_audit_log 增加 mac / menu 两列", _migrate_v5),
+    (6, "新增 Trello 集成三张表（trello_config / trello_board / trello_card）", _migrate_v6),
 ]
 
 

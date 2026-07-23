@@ -268,6 +268,64 @@ class RuleThreshold(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
 
 
+# =============================================================================
+# Trello 集成（v0.6.4）
+# =============================================================================
+
+class TrelloConfig(Base):
+    """Trello 连接配置表（API Key 明文，Token Fernet 密文存储）"""
+    __tablename__ = "trello_config"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, comment="配置名称")
+    api_key: Mapped[str] = mapped_column(String(200), nullable=False, comment="Trello API Key")
+    token_enc: Mapped[str] = mapped_column(Text, nullable=False, comment="Trello Token 密文(Fernet)")
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, comment="是否启用同步")
+    sync_min: Mapped[int] = mapped_column(Integer, nullable=False, default=5, comment="同步间隔分钟数")
+    last_sync_at: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment="最近同步时间")
+    last_sync_status: Mapped[str] = mapped_column(String(20), nullable=True, comment="最近同步状态 success/failed")
+    last_sync_error: Mapped[str] = mapped_column(Text, nullable=True, comment="最近同步失败原因")
+    updated_by: Mapped[str] = mapped_column(String(50), nullable=True, comment="修改人")
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
+
+
+class TrelloBoard(Base):
+    """Trello Board 同步缓存"""
+    __tablename__ = "trello_board"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    config_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True, comment="TrelloConfig ID")
+    board_id: Mapped[str] = mapped_column(String(50), nullable=False, comment="Trello board ID")
+    name: Mapped[str] = mapped_column(String(200), nullable=False, comment="Board 名称")
+    url: Mapped[str] = mapped_column(String(500), nullable=True, comment="Board URL")
+    is_closed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, comment="是否已归档")
+    synced_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
+
+
+class TrelloCard(Base):
+    """Trello Card 同步缓存（只读同步，v0.6.4）"""
+    __tablename__ = "trello_card"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    config_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True, comment="TrelloConfig ID")
+    card_id: Mapped[str] = mapped_column(String(50), nullable=False, comment="Trello card ID")
+    board_id: Mapped[str] = mapped_column(String(50), nullable=False, comment="所属 board ID")
+    board_name: Mapped[str] = mapped_column(String(200), nullable=True, comment="Board 名称（冗余）")
+    list_id: Mapped[str] = mapped_column(String(50), nullable=False, comment="所属 list ID")
+    list_name: Mapped[str] = mapped_column(String(200), nullable=True, comment="List 名称（冗余）")
+    name: Mapped[str] = mapped_column(String(500), nullable=False, comment="卡片标题")
+    desc: Mapped[str] = mapped_column(Text, nullable=True, comment="描述")
+    status: Mapped[str] = mapped_column(String(50), nullable=True, comment="状态标签（Done/Suspended/Help/Delayed/Not Started/Ongoing/Closed）")
+    due_date: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment="截止时间")
+    due_complete: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, comment="截止日期是否已完成")
+    labels_json: Mapped[str] = mapped_column(Text, nullable=True, comment="全部标签 JSON")
+    members_json: Mapped[str] = mapped_column(Text, nullable=True, comment="成员 JSON")
+    url: Mapped[str] = mapped_column(String(500), nullable=True, comment="卡片 URL")
+    pos: Mapped[float] = mapped_column(Float, nullable=True, comment="排序位置")
+    synced_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now)
+
+
 # 一期建表清单（供 init_database 使用；create_all 幂等，二期新增表自动补建）
 ALL_TABLES = [
     SysUser.__table__,
@@ -284,4 +342,7 @@ ALL_TABLES = [
     SysSubjectPriceRule.__table__,
     ScheduleJob.__table__,
     SysConfig.__table__,
+    TrelloConfig.__table__,
+    TrelloBoard.__table__,
+    TrelloCard.__table__,
 ]

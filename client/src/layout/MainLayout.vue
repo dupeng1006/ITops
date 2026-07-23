@@ -38,6 +38,11 @@
           <el-menu-item index="/users">用户维护</el-menu-item>
           <el-menu-item index="/audit-logs">系统日志查询</el-menu-item>
         </el-sub-menu>
+        <el-sub-menu v-if="isAdmin" index="trello">
+          <template #title><el-icon><CollectionTag /></el-icon><span>Trello 工作看板</span></template>
+          <el-menu-item index="/trello/board">我的工作看板</el-menu-item>
+          <el-menu-item index="/trello/config">连接配置</el-menu-item>
+        </el-sub-menu>
       </el-menu>
     </el-aside>
     <el-container>

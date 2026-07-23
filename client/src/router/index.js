@@ -22,6 +22,8 @@ const routes = [
       { path: 'system/config', name: 'system-config', component: () => import('../views/SystemConfigView.vue'), meta: { title: '系统配置', roles: ['admin'] } },
       { path: 'users', name: 'users', component: () => import('../views/UsersView.vue'), meta: { title: '用户维护', roles: ['admin'] } },
       { path: 'audit-logs', name: 'audit-logs', component: () => import('../views/AuditLogView.vue'), meta: { title: '系统日志查询', roles: ['admin'] } },
+      { path: 'trello/board', name: 'trello-board', component: () => import('../views/TrelloBoardView.vue'), meta: { title: 'Trello 工作看板', roles: ['admin', 'operator', 'viewer'] } },
+      { path: 'trello/config', name: 'trello-config', component: () => import('../views/TrelloConfigView.vue'), meta: { title: 'Trello 连接配置', roles: ['admin'] } },
     ],
   },
   { path: '/:pathMatch(.*)*', redirect: '/dashboard' },

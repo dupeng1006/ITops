@@ -42,6 +42,7 @@ from app.api import (
     routes_rule,
     routes_system,
     routes_task,
+    routes_trello,
 )
 from app.core.config import get_settings
 from app.models.database import get_engine, init_database
@@ -72,7 +73,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="安联资管运维管理平台",
-    description="安联资管运维管理平台（恒生 O32 投资交易系统日常运维）：M1/M2/M3 核对 + 数据源管理 + 系统配置 + 任务调度中心 + 统计看板 + 数据字典 + 本地认证",
+    description="安联资管运维管理平台（恒生 O32 投资交易系统日常运维）：M1/M2/M3 核对 + 数据源管理 + 系统配置 + 任务调度中心 + 统计看板 + 数据字典 + Trello 工作看板 + 本地认证",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -87,11 +88,12 @@ app.include_router(routes_system.router)
 app.include_router(routes_task.router)
 app.include_router(routes_dashboard.router)
 app.include_router(routes_dict.router)
+app.include_router(routes_trello.router)
 
 
 @app.get("/api/health", tags=["系统"], summary="健康检查")
 def health():
-    return {"status": "ok", "service": "o32-ops-platform", "phase": "二期(M1+M2+M3+数据字典)"}
+    return {"status": "ok", "service": "o32-ops-platform", "phase": "二期(M1+M2+M3+数据字典+Trello看板)"}
 
 
 # =============================================================================

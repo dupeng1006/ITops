@@ -32,13 +32,15 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.models.database import get_session_factory
-from app.models.entities import ReconJob, ScheduleJob, SysConfig
+from app.models.entities import ReconJob, ScheduleJob, SysConfig, TrelloConfig
 from app.services import job_launch_service
+from app.services.trello_service import sync_trello_config
 
 logger = logging.getLogger(__name__)
 
 CRON_JOB_PREFIX = "schedule-cron-"
 RETRY_JOB_PREFIX = "schedule-retry-"
+TRELLO_SYNC_PREFIX = "trello-sync-"
 
 _scheduler: Optional[BackgroundScheduler] = None
 
@@ -79,7 +81,7 @@ def _retry_delay_minutes(db: Session) -> float:
 # =============================================================================
 
 def init_scheduler() -> None:
-    """服务启动时初始化调度器并从 schedule_job 表恢复启用中的定时任务"""
+    """服务启动时初始化调度器并从 schedule_job / trello_config 表恢复启用中的任务"""
     global _scheduler
     if _scheduler is not None:
         return
@@ -94,11 +96,26 @@ def init_scheduler() -> None:
         rows = db.execute(
             select(ScheduleJob.id, ScheduleJob.cron_expr).where(ScheduleJob.enabled.is_(True))
         ).all()
+        for schedule_id, cron_expr in rows:
+            _add_cron_job(schedule_id, cron_expr)
+
+        trello_rows = db.execute(
+            select(TrelloConfig.id, TrelloConfig.sync_min).where(TrelloConfig.enabled.is_(True))
+        ).all()
+        for config_id, sync_min in trello_rows:
+            _scheduler.add_job(
+                _execute_trello_sync,
+                trigger="interval",
+                minutes=max(1, sync_min),
+                args=[config_id],
+                id=f"{TRELLO_SYNC_PREFIX}{config_id}",
+                replace_existing=True,
+                misfire_grace_time=3600,
+            )
     finally:
         db.close()
-    for schedule_id, cron_expr in rows:
-        _add_cron_job(schedule_id, cron_expr)
-    logger.info(f"任务调度器已启动（SQLAlchemyJobStore 持久化），恢复启用定时任务 {len(rows)} 个")
+    logger.info(f"任务调度器已启动（SQLAlchemyJobStore 持久化），恢复启用定时任务 {len(rows)} 个，"
+                f"Trello 同步任务 {len(trello_rows)} 个")
 
 
 def shutdown_scheduler() -> None:
@@ -145,6 +162,64 @@ def remove_schedule(schedule_id: int) -> None:
         _scheduler.remove_job(f"{CRON_JOB_PREFIX}{schedule_id}")
     except Exception:  # noqa: BLE001
         pass
+
+
+# =============================================================================
+# Trello 定时同步
+# =============================================================================
+
+def sync_trello_schedule(cfg: TrelloConfig) -> None:
+    """Trello 配置变更后同步调度器（启用→按 sync_min 注册 interval；停用→移除）"""
+    if _scheduler is None:
+        return
+    job_key = f"{TRELLO_SYNC_PREFIX}{cfg.id}"
+    if cfg.enabled:
+        _scheduler.add_job(
+            _execute_trello_sync,
+            trigger="interval",
+            minutes=max(1, cfg.sync_min),
+            args=[cfg.id],
+            id=job_key,
+            replace_existing=True,
+            misfire_grace_time=3600,
+        )
+        logger.info(f"Trello 同步任务已注册：配置 id={cfg.id}，间隔 {cfg.sync_min} 分钟")
+    else:
+        try:
+            _scheduler.remove_job(job_key)
+        except Exception:  # noqa: BLE001
+            pass
+        logger.info(f"Trello 同步任务已移除：配置 id={cfg.id}")
+
+
+def remove_trello_schedule(config_id: int) -> None:
+    """Trello 配置删除后移除调度器中的作业"""
+    if _scheduler is None:
+        return
+    try:
+        _scheduler.remove_job(f"{TRELLO_SYNC_PREFIX}{config_id}")
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def _execute_trello_sync(config_id: int) -> None:
+    """APScheduler 作业入口：同步单个 Trello 配置"""
+    db = get_session_factory()()
+    try:
+        cfg = db.get(TrelloConfig, config_id)
+        if cfg is None:
+            logger.warning(f"Trello 配置不存在（可能已删除）: id={config_id}")
+            return
+        if not cfg.enabled:
+            return
+        result = sync_trello_config(db, cfg)
+        db.commit()
+        logger.info(f"Trello 定时同步 id={config_id}: {result['message']}")
+    except Exception as e:  # noqa: BLE001
+        logger.error(f"Trello 定时同步 id={config_id} 异常: {e}")
+        db.rollback()
+    finally:
+        db.close()
 
 
 def _schedule_retry(schedule_id: int, attempt: int, prev_job_id: Optional[str], delay_minutes: float) -> None:
