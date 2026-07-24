@@ -4,13 +4,13 @@
     <el-card shadow="never">
       <template #header>
         <div class="header-row">
-          <span>DBF 数据查看（上传 dBase / FoxPro .dbf 文件，解析为表格展示；纯只读，不修改原文件）</span>
+          <span>DBF 数据查看（上传 dBase / FoxPro 格式文件，按文件内容识别，不限扩展名——中登 .713 等日期后缀文件可直接上传；纯只读，不修改原文件）</span>
           <el-button v-if="meta" type="primary" :loading="exporting" @click="doExport">导出 Excel</el-button>
         </div>
       </template>
 
       <div class="pick-row">
-        <input ref="fileInput" type="file" accept=".dbf" class="file-input" @change="onPick" />
+        <input ref="fileInput" type="file" accept=".dbf,*.*" class="file-input" @change="onPick" />
         <el-button type="primary" :disabled="!dbfFile" :loading="loading" @click="doPreview">
           {{ loading ? '解析中…' : '解析查看' }}
         </el-button>
@@ -52,7 +52,7 @@
                        v-model:page-size="pageSize" :page-sizes="[20, 50, 100, 200]" />
       </template>
 
-      <el-empty v-else-if="!loading" description="请选择 .dbf 文件并点击「解析查看」" />
+      <el-empty v-else-if="!loading" description="请选择 DBF 格式文件（按内容识别，不限扩展名）并点击「解析查看」" />
     </el-card>
   </div>
 </template>
@@ -79,11 +79,6 @@ const pageRows = computed(() => {
 function onPick(e) {
   const f = e.target.files && e.target.files[0]
   if (!f) return
-  if (!f.name.toLowerCase().endsWith('.dbf')) {
-    ElMessage.error('请选择 .dbf 文件')
-    e.target.value = ''
-    return
-  }
   dbfFile.value = f
 }
 

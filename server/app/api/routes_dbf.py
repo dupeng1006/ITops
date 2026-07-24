@@ -46,10 +46,50 @@ _EXPORT_MAX_ROWS = 200000   # 导出行数安全上限
 _MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
 _ENCODINGS = ("gbk", "utf-8", "latin1")
 
+# dBase/FoxPro 版本标识字节（文件头第 1 字节）
+_DBF_MAGIC = {
+    0x02, 0x03, 0x04,                     # FoxBASE / dBase III / dBase IV
+    0x30, 0x31, 0x32,                     # Visual FoxPro（中登文件为 0x30）
+    0x43, 0x63, 0x83, 0x8B, 0x8E, 0xCB,   # dBase IV/SQL 各变体
+    0xF5, 0xFB,                           # FoxPro 2.x / FoxBASE（含备注）
+}
+
 _TYPE_NAMES = {
     "C": "字符", "N": "数值", "F": "浮点", "D": "日期", "L": "逻辑",
     "M": "备注", "I": "整型", "B": "双精度", "Y": "货币", "T": "日期时间",
 }
+
+
+def _sniff_dbf(path: str, filename: str) -> None:
+    """
+    按文件内容识别 dBase/FoxPro 格式（不看扩展名）：
+    第 1 字节为版本标识 + 头部长度/记录长度字段自洽。不合法抛 400 中文。
+    兼容中登等"内容是 DBF、扩展名按日期命名（如 .713）"的文件。
+    """
+    try:
+        with open(path, "rb") as f:
+            head = f.read(32)
+    except OSError as e:
+        raise HTTPException(status_code=400, detail=f"文件读取失败: {e}")
+    if len(head) < 32:
+        raise HTTPException(status_code=400, detail=f"文件过小（{len(head)} 字节），不是合法的 DBF 文件: {filename}")
+    import struct
+    version = head[0]
+    header_len = struct.unpack("<H", head[8:10])[0]
+    record_len = struct.unpack("<H", head[10:12])[0]
+    # 头部自洽：dBase 系列 (header_len-33) 应整除 32（字段描述块）；
+    # Visual FoxPro（0x30-0x32）字段块后另有 263 字节库回链结构，需扣除后校验
+    base = header_len - 33
+    is_vfp = version in (0x30, 0x31, 0x32)
+    struct_ok = header_len >= 33 and record_len >= 1 and (
+        base % 32 == 0 or (is_vfp and base >= 263 and (base - 263) % 32 == 0)
+    )
+    if version not in _DBF_MAGIC or not struct_ok:
+        raise HTTPException(
+            status_code=400,
+            detail=f"文件内容不是可识别的 dBase/FoxPro（DBF）格式: {filename}"
+                   f"（首字节 0x{version:02X}，平台按内容识别而非扩展名）",
+        )
 
 
 def _client_ip(request: Request) -> Optional[str]:
@@ -129,11 +169,9 @@ async def preview(
     db: Session = Depends(get_db),
 ):
     filename = file.filename or ""
-    if not filename.lower().endswith(".dbf"):
-        raise HTTPException(status_code=400, detail=f"请上传 .dbf 文件（当前文件：{filename}）")
-
     path = await _save_upload(file)
     try:
+        _sniff_dbf(path, filename)
         table, encoding, garbled = _open_with_fallback(path)
         fields = [
             {
@@ -186,11 +224,9 @@ async def export(
     db: Session = Depends(get_db),
 ):
     filename = file.filename or ""
-    if not filename.lower().endswith(".dbf"):
-        raise HTTPException(status_code=400, detail=f"请上传 .dbf 文件（当前文件：{filename}）")
-
     path = await _save_upload(file)
     try:
+        _sniff_dbf(path, filename)
         table, encoding, garbled = _open_with_fallback(path)
 
         import openpyxl
