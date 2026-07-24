@@ -37,6 +37,7 @@ from app.api import (
     routes_auth,
     routes_dashboard,
     routes_datasource,
+    routes_dbf,
     routes_dict,
     routes_recon,
     routes_rule,
@@ -91,6 +92,7 @@ app.include_router(routes_system.router)
 app.include_router(routes_task.router)
 app.include_router(routes_dashboard.router)
 app.include_router(routes_dict.router)
+app.include_router(routes_dbf.router)
 app.include_router(routes_trello.router)
 app.include_router(routes_upgrade.router)
 

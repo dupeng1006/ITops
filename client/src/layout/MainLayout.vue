@@ -34,6 +34,9 @@
           <el-menu-item v-if="canOperate" index="/dict">
             <el-icon><Collection /></el-icon><span>数据字典查询</span>
           </el-menu-item>
+          <el-menu-item v-if="canOperate" index="/dbf">
+            <el-icon><Grid /></el-icon><span>DBF 数据查看</span>
+          </el-menu-item>
           <el-menu-item index="/archive">
             <el-icon><Files /></el-icon><span>报告归档中心</span>
           </el-menu-item>

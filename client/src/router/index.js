@@ -15,6 +15,7 @@ const routes = [
       { path: 'recon/m3', name: 'recon-m3', component: () => import('../views/ReconM3View.vue'), meta: { title: '银行间ID匹配', roles: ['admin', 'operator'] } },
       { path: 'archive', name: 'archive', component: () => import('../views/ArchiveView.vue'), meta: { title: '报告归档中心', roles: ['admin', 'operator', 'viewer'] } },
       { path: 'dict', name: 'dict', component: () => import('../views/DictView.vue'), meta: { title: '数据字典查询', roles: ['admin', 'operator'] } },
+      { path: 'dbf', name: 'dbf', component: () => import('../views/DbfView.vue'), meta: { title: 'DBF 数据查看', roles: ['admin', 'operator'] } },
       { path: 'schedule', name: 'schedule', component: () => import('../views/ScheduleView.vue'), meta: { title: '任务调度中心', roles: ['admin', 'operator'] } },
       { path: 'rules', name: 'rules', component: () => import('../views/RulesView.vue'), meta: { title: '规则配置中心', roles: ['admin'] } },
       { path: 'datasource/connections', name: 'ds-connections', component: () => import('../views/DatasourceView.vue'), meta: { title: '数据源连接配置', roles: ['admin'] } },

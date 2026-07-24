@@ -60,6 +60,8 @@ hiddenimports = [
     'sqlalchemy',
     'greenlet',
     'sqlparse',
+    # DBF 数据查看（v0.7.0，纯 Python dBase/FoxPro 解析）
+    'dbfread',
 ]
 
 # 数据库驱动（二期数据源直连用，本步随包验证免安装可行性）
