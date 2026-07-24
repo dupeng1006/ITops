@@ -34,6 +34,8 @@ block_cipher = None
 # 规则初始种子（首启建库时导入 rule_code_mapping / rule_bulk_product / rule_threshold）
 datas = [
     (os.path.join(SERVER_ROOT, 'config', 'rule_config.json'), 'config'),
+    # 中登接口字段说明内置库（v0.7.2，DBF 查看表头说明）
+    (os.path.join(SERVER_ROOT, 'config', 'clearing_spec'), 'config/clearing_spec'),
 ]
 binaries = []
 hiddenimports = [

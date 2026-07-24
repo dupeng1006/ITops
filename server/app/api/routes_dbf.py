@@ -198,6 +198,27 @@ async def preview(
         )
         db.commit()
 
+        # 中登接口字段说明匹配（按文件名前缀，内置官方规范库）
+        from app.services.clearing_spec_service import match_interface
+        spec = match_interface(filename)
+        spec_out = None
+        if spec is not None:
+            spec_fields = {}
+            for f in fields:
+                sf = spec["fields"].get(f["name"])
+                if sf is not None:
+                    spec_fields[f["name"]] = {"desc": sf.get("desc", "")}
+            spec_out = {
+                "code": spec["code"],
+                "name": spec["name"],
+                "spec_name": spec["spec_name"],
+                "file_pattern": spec["file_pattern"],
+                "market": spec["market"],
+                "fields": spec_fields,
+                "matched_fields": len(spec_fields),
+                "total_spec_fields": len(spec["fields"]),
+            }
+
         return {
             "filename": filename,
             "encoding": encoding,
@@ -208,6 +229,7 @@ async def preview(
             "truncated": truncated,
             "fields": fields,
             "rows": rows,
+            "spec": spec_out,
         }
     finally:
         try:

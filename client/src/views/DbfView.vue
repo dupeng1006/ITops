@@ -32,13 +32,24 @@
           <template #title>记录较多，页面仅展示前 {{ meta.preview_rows }} 行；全量数据请点「导出 Excel」。</template>
         </el-alert>
 
+        <el-alert v-if="meta.spec" type="success" :closable="false" class="tip-bar">
+          <template #title>
+            <b>接口自动匹配</b>：{{ meta.spec.code }}（{{ meta.spec.name }}）
+            ｜规范来源：{{ meta.spec.spec_name }}
+            <template v-if="meta.spec.file_pattern">｜官方命名约定：{{ meta.spec.file_pattern }}</template>
+            ｜字段说明覆盖 {{ meta.spec.matched_fields }}/{{ meta.spec.total_spec_fields }}
+            （表头蓝色文字为官方字段说明，悬停可见完整内容）
+          </template>
+        </el-alert>
+
         <el-table :data="pageRows" stripe border size="small" class="data-table" v-loading="loading">
           <el-table-column type="index" label="#" width="55" :index="(i) => (page - 1) * pageSize + i + 1" />
           <el-table-column v-for="f in meta.fields" :key="f.name" :prop="f.name" min-width="110"
                            show-overflow-tooltip>
             <template #header>
-              <div class="col-head">
+              <div class="col-head" :title="specDesc(f.name) || ''">
                 <span>{{ f.name }}</span>
+                <span v-if="specDesc(f.name)" class="col-cn">{{ specDesc(f.name) }}</span>
                 <span class="col-type">{{ f.type_name }}{{ f.type === 'N' || f.type === 'F' ? `(${f.length},${f.decimal})` : f.type === 'C' ? `(${f.length})` : '' }}</span>
               </div>
             </template>
@@ -75,6 +86,14 @@ const pageRows = computed(() => {
   const start = (page.value - 1) * pageSize.value
   return meta.value.rows.slice(start, start + pageSize.value)
 })
+
+// 中登接口官方字段说明（匹配成功时显示在表头字段名下方）
+function specDesc(fieldName) {
+  const sp = meta.value && meta.value.spec
+  if (!sp || !sp.fields) return ''
+  const f = sp.fields[fieldName]
+  return f ? (f.desc || '') : ''
+}
 
 function onPick(e) {
   const f = e.target.files && e.target.files[0]
@@ -130,6 +149,7 @@ function reset() {
 .tip-bar { margin: 8px 0; }
 .data-table { margin-top: 8px; }
 .col-head { display: flex; flex-direction: column; line-height: 1.3; }
+.col-cn { font-size: 12px; color: #005EB8; font-weight: 600; }
 .col-type { font-size: 11px; color: #909399; font-weight: normal; }
 .pager { margin-top: 12px; justify-content: flex-end; }
 </style>
