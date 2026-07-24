@@ -1,0 +1,2949 @@
+{
+ "market": "SZ",
+ "spec_name": "深市登记结算数据接口规范（结算参与人版 Ver5.17）",
+ "generated": "2026-07-24",
+ "interfaces": {
+  "sjsmx": {
+   "name": "清算明细库",
+   "page": 8,
+   "file_pattern": "SJSMXmmdd.DBF",
+   "fields": {
+    "MXJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "MXBFZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "备付金账户"
+    },
+    "MXSJLX": {
+     "type": "Character",
+     "length": 2,
+     "desc": "数据类型"
+    },
+    "MXYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "MXZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "MXJYDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "交易单元"
+    },
+    "MXTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "MXZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户号码"
+    },
+    "MXDDBH": {
+     "type": "Character",
+     "length": 24,
+     "desc": "客户订单编号/申请单号"
+    },
+    "MXYYB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "营业部代码"
+    },
+    "MXZXBH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "执行编号"
+    },
+    "MXYWLSH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "业务流水号"
+    },
+    "MXCJSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "成交数量"
+    },
+    "MXQSSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "清算数量"
+    },
+    "MXCJJG": {
+     "type": "Numeric",
+     "length": "13,4",
+     "desc": "成交价格"
+    },
+    "MXQSJG": {
+     "type": "Numeric",
+     "length": "18,9",
+     "desc": "清算价格"
+    },
+    "MXXYJY": {
+     "type": "Character",
+     "length": 1,
+     "desc": "信用交易标识"
+    },
+    "MXPCBS": {
+     "type": "Character",
+     "length": 1,
+     "desc": "平仓标识"
+    },
+    "MXZQLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "证券类别"
+    },
+    "MXZQZL": {
+     "type": "Character",
+     "length": 2,
+     "desc": "证券子类别"
+    },
+    "MXGFXZ": {
+     "type": "Character",
+     "length": 2,
+     "desc": "股份性质"
+    },
+    "MXJSFS": {
+     "type": "Character",
+     "length": 1,
+     "desc": "交收方式"
+    },
+    "MXHBDH": {
+     "type": "Character",
+     "length": 3,
+     "desc": "货币代号"
+    },
+    "MXQSBJ": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "清算本金"
+    },
+    "MXYHS": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "印花税"
+    },
+    "MXJYJSF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "交易经手费"
+    },
+    "MXJGGF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "监管规费"
+    },
+    "MXGHF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "过户费"
+    },
+    "MXJSF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "结算费"
+    },
+    "MXSXF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "手续费"
+    },
+    "MXQSYJ": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "结算参与人佣金；结算参与人系统自用"
+    },
+    "MXQTFY": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "其他费用"
+    },
+    "MXZJJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金金额"
+    },
+    "MXSFJE": {
+     "type": "Numeric",
+     "length": "18,2",
+     "desc": "收付净额"
+    },
+    "MXCJRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "成交日期；CCYYMMDD"
+    },
+    "MXQSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "清算日期；CCYYMMDD"
+    },
+    "MXJSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "交收日期；CCYYMMDD"
+    },
+    "MXFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "MXQTRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "其它日期；CCYYMMDD"
+    },
+    "MXSCDM": {
+     "type": "Character",
+     "length": 2,
+     "desc": "市场代码；保留字段"
+    },
+    "MXJYFS": {
+     "type": "Character",
+     "length": 2,
+     "desc": "交易方式"
+    },
+    "MXZQDM2": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码 2"
+    },
+    "MXTGDY2": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元 2"
+    },
+    "MXDDBH2": {
+     "type": "Character",
+     "length": 16,
+     "desc": "订单编号 2；保留字段"
+    },
+    "MXCWDH": {
+     "type": "Character",
+     "length": 4,
+     "desc": "错误代号"
+    },
+    "MXPPHM": {
+     "type": "Character",
+     "length": 10,
+     "desc": "匹配号码；备用"
+    },
+    "MXFJSM": {
+     "type": "Character",
+     "length": 30,
+     "desc": "附加说明"
+    },
+    "MXBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  },
+  "sjsjg": {
+   "name": "明细结果库",
+   "page": 50,
+   "file_pattern": "SJSJGmmdd.DBF",
+   "fields": {
+    "JGJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "JGBFZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "备付金账户"
+    },
+    "JGSJLX": {
+     "type": "Character",
+     "length": 2,
+     "desc": "数据类型"
+    },
+    "JGYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "JGZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "JGJYDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "交易单元"
+    },
+    "JGTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "JGZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户号码"
+    },
+    "JGDDBH": {
+     "type": "Character",
+     "length": 24,
+     "desc": "客户订单编号"
+    },
+    "JGYYB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "营业部代码"
+    },
+    "JGZXBH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "执行编号"
+    },
+    "JGYWLSH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "业务流水号"
+    },
+    "JGCJSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "成交数量"
+    },
+    "JGQSSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "清算数量"
+    },
+    "JGJSSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "交收数量"
+    },
+    "JGCJJG": {
+     "type": "Numeric",
+     "length": "13,4",
+     "desc": "成交价格"
+    },
+    "JGQSJG": {
+     "type": "Numeric",
+     "length": "18,9",
+     "desc": "清算价格"
+    },
+    "JGXYJY": {
+     "type": "Character",
+     "length": 1,
+     "desc": "信用交易标识"
+    },
+    "JGPCBS": {
+     "type": "Character",
+     "length": 1,
+     "desc": "平仓标识"
+    },
+    "JGZQLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "证券类别"
+    },
+    "JGZQZL": {
+     "type": "Character",
+     "length": 2,
+     "desc": "证券子类"
+    },
+    "JGGFXZ": {
+     "type": "Character",
+     "length": 2,
+     "desc": "股份性质"
+    },
+    "JGLTLX": {
+     "type": "Character",
+     "length": 1,
+     "desc": "流通类型"
+    },
+    "JGJSFS": {
+     "type": "Character",
+     "length": 1,
+     "desc": "交收方式"
+    },
+    "JGHBDH": {
+     "type": "Character",
+     "length": 3,
+     "desc": "货币代号"
+    },
+    "JGQSBJ": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "清算本金"
+    },
+    "JGYHS": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "印花税"
+    },
+    "JGJYJSF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "交易经手费"
+    },
+    "JGJGGF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "监管规费"
+    },
+    "JGGHF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "过户费"
+    },
+    "JGJSF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "结算费"
+    },
+    "JGSXF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "手续费"
+    },
+    "JGQSYJ": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "结算参与人佣金；结算参与人系统自用"
+    },
+    "JGQTFY": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "其它费用"
+    },
+    "JGZJJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金金额"
+    },
+    "JGSFJE": {
+     "type": "Numeric",
+     "length": "18,2",
+     "desc": "收付净额"
+    },
+    "JGJSBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "交收标志"
+    },
+    "JGZYDH": {
+     "type": "Character",
+     "length": 4,
+     "desc": "摘要代号"
+    },
+    "JGCJRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "成交日期；CCYYMMDD"
+    },
+    "JGQSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "清算日期；CCYYMMDD"
+    },
+    "JGJSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "交收日期；CCYYMMDD"
+    },
+    "JGFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "JGQTRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "其它日期；CCYYMMDD"
+    },
+    "JGSCDM": {
+     "type": "Character",
+     "length": 2,
+     "desc": "市场代码"
+    },
+    "JGJYFS": {
+     "type": "Character",
+     "length": 2,
+     "desc": "交易方式"
+    },
+    "JGZQDM2": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码 2"
+    },
+    "JGTGDY2": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元 2"
+    },
+    "JGDDBH2": {
+     "type": "Character",
+     "length": 16,
+     "desc": "订单编号 2；保留字段"
+    },
+    "JGFJSM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "附加说明"
+    },
+    "JGBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  },
+  "bhjg": {
+   "name": "B转H明细结果库",
+   "page": 154,
+   "file_pattern": "BHJGmmdd.DBF",
+   "fields": {
+    "JGJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "JGBFZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "备付金账户"
+    },
+    "JGSJLX": {
+     "type": "Character",
+     "length": 2,
+     "desc": "数据类型"
+    },
+    "JGYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "JGZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "JGJYDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "交易单元"
+    },
+    "JGTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "JGZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户号码"
+    },
+    "JGDDBH": {
+     "type": "Character",
+     "length": 24,
+     "desc": "客户订单编号"
+    },
+    "JGYYB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "营业部代码"
+    },
+    "JGZXBH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "执行编号"
+    },
+    "JGYWLSH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "业务流水号"
+    },
+    "JGCJSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "成交数量"
+    },
+    "JGQSSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "清算数量"
+    },
+    "JGJSSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "交收数量"
+    },
+    "JGCJJG": {
+     "type": "Numeric",
+     "length": "13,4",
+     "desc": "成交价格"
+    },
+    "JGQSJG": {
+     "type": "Numeric",
+     "length": "18,9",
+     "desc": "清算价格"
+    },
+    "JGXYJY": {
+     "type": "Character",
+     "length": 1,
+     "desc": "信用交易标识"
+    },
+    "JGPCBS": {
+     "type": "Character",
+     "length": 1,
+     "desc": "平仓标识"
+    },
+    "JGZQLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "证券类别"
+    },
+    "JGZQZL": {
+     "type": "Character",
+     "length": 2,
+     "desc": "证券子类"
+    },
+    "JGGFXZ": {
+     "type": "Character",
+     "length": 2,
+     "desc": "股份性质"
+    },
+    "JGLTLX": {
+     "type": "Character",
+     "length": 1,
+     "desc": "流通类型"
+    },
+    "JGJSFS": {
+     "type": "Character",
+     "length": 1,
+     "desc": "交收方式"
+    },
+    "JGHBDH": {
+     "type": "Character",
+     "length": 3,
+     "desc": "货币代号"
+    },
+    "JGQSBJ": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "清算本金"
+    },
+    "JGYHS": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "印花税"
+    },
+    "JGJYJSF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "交易经手费"
+    },
+    "JGJGGF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "监管规费"
+    },
+    "JGGHF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "过户费"
+    },
+    "JGJSF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "结算费"
+    },
+    "JGSXF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "手续费"
+    },
+    "JGQSYJ": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "结算参与人佣金；结算参与人系统自用"
+    },
+    "JGQTFY": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "其它费用；财务汇报局交易征费"
+    },
+    "JGZJJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金金额"
+    },
+    "JGSFJE": {
+     "type": "Numeric",
+     "length": "18,2",
+     "desc": "收付净额"
+    },
+    "JGJSBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "交收标志"
+    },
+    "JGZYDH": {
+     "type": "Character",
+     "length": 4,
+     "desc": "摘要代号"
+    },
+    "JGCJRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "成交日期；CCYYMMDD"
+    },
+    "JGQSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "清算日期；CCYYMMDD"
+    },
+    "JGJSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "交收日期；CCYYMMDD"
+    },
+    "JGFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "JGQTRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "其它日期；CCYYMMDD"
+    },
+    "JGSCDM": {
+     "type": "Character",
+     "length": 2,
+     "desc": "市场代码"
+    },
+    "JGJYFS": {
+     "type": "Character",
+     "length": 2,
+     "desc": "交易方式"
+    },
+    "JGZQDM2": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码 2"
+    },
+    "JGTGDY2": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元 2"
+    },
+    "JGDDBH2": {
+     "type": "Character",
+     "length": 16,
+     "desc": "订单编号 2；保留字段"
+    },
+    "JGFJSM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "附加说明"
+    },
+    "JGBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  },
+  "sjsfx": {
+   "name": "发行信息库",
+   "page": 168,
+   "file_pattern": "SJSFXmmdd.DBF",
+   "fields": {
+    "FXJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "FXTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "FXZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "FXZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户"
+    },
+    "FXYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "FXDDBH": {
+     "type": "Character",
+     "length": 10,
+     "desc": "客户订单编号"
+    },
+    "FXWTGS": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "委托股数"
+    },
+    "FXQRGS": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "确认股数"
+    },
+    "FXZJJE": {
+     "type": "Numeric",
+     "length": "17,3",
+     "desc": "资金金额"
+    },
+    "FXCWDH": {
+     "type": "Character",
+     "length": 4,
+     "desc": "错误代号"
+    },
+    "FXFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "FXBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  },
+  "sjsks": {
+   "name": "发行可申购额度信息库",
+   "page": 173,
+   "file_pattern": "SJSKSmmdd.DBF",
+   "fields": {
+    "KSXWDM": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管编码"
+    },
+    "KSGDDM": {
+     "type": "Character",
+     "length": 10,
+     "desc": "证券账户"
+    },
+    "KSYWLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "业务类别；‘A9’：新股发行投资者可申购额度数据"
+    },
+    "KSKSGE": {
+     "type": "Numeric",
+     "length": "12,0",
+     "desc": "可申购额度；按市值计算的可申购额度，单位股，>0"
+    },
+    "KSFSRQ": {
+     "type": "Date",
+     "length": "",
+     "desc": "发送日期"
+    },
+    "KSBYZD": {
+     "type": "Character",
+     "length": 10,
+     "desc": "备用字段；备用"
+    }
+   }
+  },
+  "sjsdz": {
+   "name": "股份结算对帐库",
+   "page": 175,
+   "file_pattern": "SJSDZmmdd.DBF",
+   "fields": {
+    "DZTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "DZZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "DZZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户"
+    },
+    "DZGFXZ": {
+     "type": "Character",
+     "length": 2,
+     "desc": "股份性质"
+    },
+    "DZLTLX": {
+     "type": "Character",
+     "length": 1,
+     "desc": "流通类型"
+    },
+    "DZZYGS": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "总拥股数"
+    },
+    "DZFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "DZBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  },
+  "bhdz": {
+   "name": "B转H对帐库",
+   "page": 175,
+   "file_pattern": "BHDZmmdd.DBF",
+   "fields": {
+    "DZTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "DZZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "DZZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户"
+    },
+    "DZGFXZ": {
+     "type": "Character",
+     "length": 2,
+     "desc": "股份性质"
+    },
+    "DZLTLX": {
+     "type": "Character",
+     "length": 1,
+     "desc": "流通类型"
+    },
+    "DZZYGS": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "总拥股数"
+    },
+    "DZFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "DZBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  },
+  "lofjs": {
+   "name": "LOF结算信息库",
+   "page": 176,
+   "file_pattern": "LOFJSmmdd.DBF",
+   "fields": {
+    "JSJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "JSJYDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "交易单元"
+    },
+    "JSTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "JSZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码；目前只启用 6 位，左对齐，右补空格"
+    },
+    "JSZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户；目前只启用 10 位，左对齐，右补空格"
+    },
+    "JSYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "JSWTRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "委托日期；CCYYMMDD"
+    },
+    "JSDDBH": {
+     "type": "Character",
+     "length": 10,
+     "desc": "客户订单编号；结算参与人系统产生"
+    },
+    "JSYYBDM": {
+     "type": "Character",
+     "length": 4,
+     "desc": "营业部代码；向深交所报盘时申报的营业部识别码"
+    },
+    "JSZXBH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "执行编号；深交所产生的执行编号（成交号码）"
+    },
+    "JSJSLS": {
+     "type": "Numeric",
+     "length": "10,0",
+     "desc": "结算流水号；TA 系统产生"
+    },
+    "JSWTSL": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "委托数量"
+    },
+    "JSQRSL": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "确认数量"
+    },
+    "JSJJJZ": {
+     "type": "Numeric",
+     "length": "10,4",
+     "desc": "基金单位净值"
+    },
+    "JSZJJE": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "资金金额"
+    },
+    "JSZJJE1": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "资金金额 1"
+    },
+    "JSZJJE2": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "资金金额 2"
+    },
+    "JSZJJE3": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "资金金额 3"
+    },
+    "JSZJJE4": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "资金金额 4"
+    },
+    "JSZJJE5": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "资金金额 5"
+    },
+    "JSZJJE6": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "资金金额 6"
+    },
+    "JSZJJE7": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "资金金额 7"
+    },
+    "JSZJJE8": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "资金金额 8"
+    },
+    "JSFHDM": {
+     "type": "Character",
+     "length": 4,
+     "desc": "返回代码"
+    },
+    "JSGHRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "过户日期；CCYYMMDD"
+    },
+    "JSFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "JSBYZ1": {
+     "type": "Character",
+     "length": 6,
+     "desc": "备用字段 1"
+    },
+    "JSBYZ2": {
+     "type": "Character",
+     "length": 30,
+     "desc": "备用字段 2"
+    },
+    "JSBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  },
+  "szsds": {
+   "name": "限售股所得税信息库",
+   "page": 179,
+   "file_pattern": "SZSDSmmdd.DBF",
+   "fields": {
+    "SDSJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号；原资金结算主席位"
+    },
+    "SDSZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "SDSHDBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "划断标志"
+    },
+    "SDSYWLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "业务类别"
+    },
+    "SDSTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元；原席位代码"
+    },
+    "SDSZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户；左对齐，右补空格"
+    },
+    "SDSZXBH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "执行编号；即原成交号码。新一代交易系统上线前，启用左 9位，右补空格"
+    },
+    "SDSDDBH": {
+     "type": "Character",
+     "length": 24,
+     "desc": "订单编号；即原委托序号。左对齐，右补空格"
+    },
+    "SDSMCGS": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "卖出股数"
+    },
+    "SDSMCXS": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "卖出限售股数；卖出股数中包含的限售股数"
+    },
+    "SDSMCJG": {
+     "type": "Numeric",
+     "length": "13,4",
+     "desc": "卖出价格"
+    },
+    "SDSMCJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖出限售股资金金额"
+    },
+    "SDSMYHS": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "卖出限售股印花税"
+    },
+    "SDSMCYJ": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "卖出限售股佣金"
+    },
+    "SDSMGYZ": {
+     "type": "Numeric",
+     "length": "13,4",
+     "desc": "限售股每股原值"
+    },
+    "SDSZYZ": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖出限售股总原值"
+    },
+    "SDSYSSD": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "应纳税所得额"
+    },
+    "SDSYNSE": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "应纳税额"
+    },
+    "SDSMGHF": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "卖出限售股过户费"
+    },
+    "SDSQTSF": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "卖出限售股其它税费；备用字段"
+    },
+    "SDSCJRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "成交日期；CCYYMMDD"
+    },
+    "SDSFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "SDSBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；券商系统自用"
+    }
+   }
+  },
+  "zsmx": {
+   "name": "征税明细信息库",
+   "page": 181,
+   "file_pattern": "ZSMXmmdd.DBF",
+   "fields": {
+    "MXJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账户；原称“结算席位”"
+    },
+    "MXBFZH": {
+     "type": "Character",
+     "length": 10,
+     "desc": "结算备付金账号"
+    },
+    "MXYWLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "业务类别；‘ZS’-股息红利所得税"
+    },
+    "MXZQDH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "证券代号"
+    },
+    "MXXWDH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元；原称“席位代号”"
+    },
+    "MXGDDM": {
+     "type": "Character",
+     "length": 10,
+     "desc": "证券账户"
+    },
+    "MXJCGS": {
+     "type": "Numeric",
+     "length": "12,0",
+     "desc": "净减持股数"
+    },
+    "MXJCRQ": {
+     "type": "Date",
+     "length": "",
+     "desc": "减持股份交割日期"
+    },
+    "MXJSRQ": {
+     "type": "Date",
+     "length": "",
+     "desc": "计税日期；应缴纳股息红利所得税的计算日期"
+    },
+    "MXJSLS": {
+     "type": "Character",
+     "length": 10,
+     "desc": "计税流水号；同一计税日期内计税流水号唯一"
+    },
+    "MXFSJE": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "应缴税金金额；>0"
+    },
+    "MXHBDH": {
+     "type": "Character",
+     "length": 3,
+     "desc": "货币代号；对 A 股证券：RMB对 B 股证券：HKD"
+    },
+    "MXFSRQ": {
+     "type": "Date",
+     "length": "",
+     "desc": "发送日期；为当前工作日"
+    }
+   }
+  },
+  "zsmxsb": {
+   "name": "征税明细申报库",
+   "page": 182,
+   "file_pattern": "ZSMXSBmmdd.DBF",
+   "fields": {
+    "SBJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账户；原“结算席位”"
+    },
+    "SBYWLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "业务类别；‘ZS’-股息红利所得税"
+    },
+    "SBJSRQ": {
+     "type": "Date",
+     "length": 8,
+     "desc": "计税日期；CCYYMMDD，中国结算深圳分公司生成"
+    },
+    "SBJSLS": {
+     "type": "Character",
+     "length": 10,
+     "desc": "计税流水号；中国结算深圳分公司生成"
+    },
+    "SBSFJE": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "扣收成功税款金额；>0，应与中国结算深圳分公司生成的投资者应缴税金相同"
+    },
+    "SBFSRQ": {
+     "type": "Date",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD，数据发送中国结算深圳分公司的日期，应为当前工作日。"
+    }
+   }
+  },
+  "zsmxfk": {
+   "name": "征税明细反馈库",
+   "page": 183,
+   "file_pattern": "ZSMXFKmmdd.DBF",
+   "fields": {
+    "FKJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账户"
+    },
+    "FKYWLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "业务类别"
+    },
+    "FKJSRQ": {
+     "type": "Date",
+     "length": 8,
+     "desc": "计税日期；CCYYMMDD"
+    },
+    "FKJSLS": {
+     "type": "Character",
+     "length": 10,
+     "desc": "计税流水号"
+    },
+    "FKSFJE": {
+     "type": "Numeric",
+     "length": "16,2",
+     "desc": "扣收成功税款金额"
+    },
+    "FKFSRQ": {
+     "type": "Date",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "FKCWDH": {
+     "type": "Character",
+     "length": 3,
+     "desc": "错误代号；错误代号不为空，表示该笔记录无效"
+    }
+   }
+  },
+  "dsfqs": {
+   "name": "实时代收代付信息库",
+   "page": 184,
+   "file_pattern": "DSFQSmmdd.DBF",
+   "fields": {
+    "QSBFJS": {
+     "type": "Character",
+     "length": 6,
+     "desc": "本方结算账号"
+    },
+    "QSBFTG": {
+     "type": "Character",
+     "length": 6,
+     "desc": "本方托管单元"
+    },
+    "QSBFJY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "本方交易单元"
+    },
+    "QSBFZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "本方证券账户"
+    },
+    "QSZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "QSYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "QSZHZQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "组合证券代码"
+    },
+    "QSDFJS": {
+     "type": "Character",
+     "length": 6,
+     "desc": "对方结算账号"
+    },
+    "QSDFTG": {
+     "type": "Character",
+     "length": 6,
+     "desc": "对方托管单元"
+    },
+    "QSDFJY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "对方交易单元"
+    },
+    "QSDFZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "对方证券账户"
+    },
+    "QSDDBH": {
+     "type": "Character",
+     "length": 24,
+     "desc": "订单编号；左对齐，右补空格"
+    },
+    "QSZXBH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "执行编号"
+    },
+    "QSQTBH": {
+     "type": "Character",
+     "length": 30,
+     "desc": "其他编号"
+    },
+    "QSSFJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "收付金额"
+    },
+    "QSQTJE": {
+     "type": "Numeric",
+     "length": 17,
+     "desc": "其他金额；.2"
+    },
+    "QSJYRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "交易日期；CCYYMMDD"
+    },
+    "QSQSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "初始清算日期；CCYYMMDD"
+    },
+    "QSFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "QSBYZD1": {
+     "type": "Character",
+     "length": 30,
+     "desc": "备用字段 1"
+    },
+    "QSBYZD2": {
+     "type": "Character",
+     "length": 30,
+     "desc": "备用字段 2"
+    },
+    "QSBYZD3": {
+     "type": "Numeric",
+     "length": 17,
+     "desc": "备用字段 3；.2"
+    }
+   }
+  },
+  "dsffk": {
+   "name": "实时代收代付信息反馈库",
+   "page": 188,
+   "file_pattern": "DSFFKmmdd.DBF",
+   "fields": {
+    "FKJLID": {
+     "type": "Numeric",
+     "length": 18,
+     "desc": "记录顺序号；.0"
+    },
+    "FKBFJS": {
+     "type": "Character",
+     "length": 6,
+     "desc": "本方结算账号"
+    },
+    "FKBFTG": {
+     "type": "Character",
+     "length": 6,
+     "desc": "本方托管单元"
+    },
+    "FKBFJY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "本方交易单元"
+    },
+    "FKBFZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "本方证券账户"
+    },
+    "FKZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "FKYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "FKZHZQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "组合证券代码"
+    },
+    "FKDFJS": {
+     "type": "Character",
+     "length": 6,
+     "desc": "对方结算账号"
+    },
+    "FKDFTG": {
+     "type": "Character",
+     "length": 6,
+     "desc": "对方托管单元"
+    },
+    "FKDFJY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "对方交易单元"
+    },
+    "FKDFZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "对方证券账户"
+    },
+    "FKDDBH": {
+     "type": "Character",
+     "length": 24,
+     "desc": "订单编号；左对齐，右补空格"
+    },
+    "FKZXBH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "执行编号"
+    },
+    "FKQTBH": {
+     "type": "Character",
+     "length": 30,
+     "desc": "其他编号"
+    },
+    "FKSFJE": {
+     "type": "Numeric",
+     "length": 17,
+     "desc": "收付金额；.2"
+    },
+    "FKQTJE": {
+     "type": "Numeric",
+     "length": 17,
+     "desc": "其他金额；.2"
+    },
+    "FKJYRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "交易日期；CCYYMMDD"
+    },
+    "FKQSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "初始清算日期；CCYYMMDD"
+    },
+    "FKFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "FKCWDH": {
+     "type": "Character",
+     "length": 4,
+     "desc": "错误代号；左对齐"
+    },
+    "FKBYZD1": {
+     "type": "Character",
+     "length": 30,
+     "desc": "备用字段 1"
+    },
+    "FKBYZD2": {
+     "type": "Character",
+     "length": 30,
+     "desc": "备用字段 2"
+    },
+    "FKBYZD3": {
+     "type": "Numeric",
+     "length": 17,
+     "desc": "备用字段 3；.2"
+    }
+   }
+  },
+  "dsfmx": {
+   "name": "实时代收代付明细库",
+   "page": 189,
+   "file_pattern": "DSFMXmmdd.DBF",
+   "fields": {
+    "MXSXH": {
+     "type": "Numeric",
+     "length": 18,
+     "desc": "顺序号；当天明细数据唯一标识"
+    },
+    "MXFFJS": {
+     "type": "Character",
+     "length": 6,
+     "desc": "付方结算账号"
+    },
+    "MXFFTG": {
+     "type": "Character",
+     "length": 6,
+     "desc": "付方托管单元"
+    },
+    "MXFTGM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "付方托管单元名称"
+    },
+    "MXFFJY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "付方交易单元"
+    },
+    "MXFJYM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "付方交易单元名称"
+    },
+    "MXFFZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "付方证券账户"
+    },
+    "MXFZQM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "付方证券账户名称"
+    },
+    "MXZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "MXYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "MXZHZQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "组合证券代码"
+    },
+    "MXSFJS": {
+     "type": "Character",
+     "length": 6,
+     "desc": "收方结算账号"
+    },
+    "MXSFTG": {
+     "type": "Character",
+     "length": 6,
+     "desc": "收方托管单元"
+    },
+    "MXSTGM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "收方托管单元名称"
+    },
+    "MXSFJY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "收方交易单元"
+    },
+    "MXSJYM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "收方交易单元名称"
+    },
+    "MXSFZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "收方证券账户"
+    },
+    "MXSZQM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "收方证券账户名称"
+    },
+    "MXDDBH": {
+     "type": "Character",
+     "length": 24,
+     "desc": "订单编号；左对齐，右补空格"
+    },
+    "MXZXBH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "执行编号"
+    },
+    "MXQTBH": {
+     "type": "Character",
+     "length": 30,
+     "desc": "其他编号；对于 CDS 业务，填写合约编号"
+    },
+    "MXSFJE": {
+     "type": "Numeric",
+     "length": 17,
+     "desc": "收付金额；.2 不包含手续费"
+    },
+    "MXQTJE": {
+     "type": "Numeric",
+     "length": 17,
+     "desc": "其他金额；.2对于 CDS 业务，为名义本金"
+    },
+    "MXFFFY": {
+     "type": "Numeric",
+     "length": 17,
+     "desc": "付方手续费；.2"
+    },
+    "MXSFFY": {
+     "type": "Numeric",
+     "length": 17,
+     "desc": "收方手续费；.2"
+    },
+    "MXJYRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "交易日期；CCYYMMDD"
+    },
+    "MXQSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "初始清算日期；CCYYMMDD"
+    },
+    "MXFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "MXYWLS": {
+     "type": "Character",
+     "length": 16,
+     "desc": "业务流水号；与汇总数据报文的清算业务流水号对应"
+    },
+    "MXJSZT": {
+     "type": "Character",
+     "length": 1,
+     "desc": "交收状态"
+    },
+    "MXBYZD1": {
+     "type": "Character",
+     "length": 30,
+     "desc": "备用字段 1"
+    },
+    "MXBYZD2": {
+     "type": "Character",
+     "length": 30,
+     "desc": "备用字段 2"
+    },
+    "MXBYZD3": {
+     "type": "Numeric",
+     "length": 17,
+     "desc": "备用字段 3；.2"
+    }
+   }
+  },
+  "sjsdvpjg": {
+   "name": "可售交收锁定结果库",
+   "page": 191,
+   "file_pattern": "SJSDVPJGmmdd.DBF",
+   "fields": {
+    "JGJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "JGBFZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "备付金账户"
+    },
+    "JGZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "JGGFXZ": {
+     "type": "Character",
+     "length": 2,
+     "desc": "股份性质"
+    },
+    "JGLTLX": {
+     "type": "Character",
+     "length": 1,
+     "desc": "流通类型"
+    },
+    "JGZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户"
+    },
+    "JGTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "JGJSSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "交收数量；>0，锁定数量"
+    },
+    "JGFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "JGBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志"
+    }
+   }
+  },
+  "sjsqs": {
+   "name": "资金清算汇总库",
+   "page": 193,
+   "file_pattern": "SJSQSmmdd.DBF",
+   "fields": {
+    "QSSJLX": {
+     "type": "Character",
+     "length": 2,
+     "desc": "数据类型"
+    },
+    "QSYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "QSZJZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "备付金账户"
+    },
+    "QSZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "QSTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "QSJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "QSSFJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "收付金额"
+    },
+    "QSMRJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "买入金额"
+    },
+    "QSMCJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖出金额"
+    },
+    "QSYHS": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "印花税"
+    },
+    "QSJGGF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "监管规费"
+    },
+    "QSJFXJ": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "结算风险金"
+    },
+    "QSJSF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "结算费"
+    },
+    "QSGHF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "过户费"
+    },
+    "QSJYJSF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "交易经手费"
+    },
+    "QSSXF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "手续费"
+    },
+    "QSZJE1": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金金额 1"
+    },
+    "QSZJE2": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金金额 2"
+    },
+    "QSZJE3": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金金额 3"
+    },
+    "QSJSFS": {
+     "type": "Character",
+     "length": 1,
+     "desc": "交收方式"
+    },
+    "QSCJRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "成交日期；CCYYMMDD"
+    },
+    "QSQSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "清算日期；CCYYMMDD"
+    },
+    "QSJSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "交收日期；CCYYMMDD"
+    },
+    "QSFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "QSZQDM2": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码 2；保留字段"
+    },
+    "QSTGDY2": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元 2；保留字段"
+    },
+    "QSFJSM": {
+     "type": "Character",
+     "length": 30,
+     "desc": "附加说明；辅助信息"
+    },
+    "QSBYZD": {
+     "type": "Character",
+     "length": 20,
+     "desc": "备用字段；保留字段"
+    },
+    "QSBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；参与人系统自用"
+    }
+   }
+  },
+  "sjsqs0": {
+   "name": "预清算资金汇总库（结构同SJSQS）",
+   "page": 205,
+   "file_pattern": "SJSQS0mmdd.DBF",
+   "fields": {
+    "QSSJLX": {
+     "type": "Character",
+     "length": 2,
+     "desc": "数据类型"
+    },
+    "QSYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "QSZJZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "备付金账户"
+    },
+    "QSZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "QSTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "QSJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "QSSFJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "收付金额"
+    },
+    "QSMRJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "买入金额"
+    },
+    "QSMCJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖出金额"
+    },
+    "QSYHS": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "印花税"
+    },
+    "QSJGGF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "监管规费"
+    },
+    "QSJFXJ": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "结算风险金"
+    },
+    "QSJSF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "结算费"
+    },
+    "QSGHF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "过户费"
+    },
+    "QSJYJSF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "交易经手费"
+    },
+    "QSSXF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "手续费"
+    },
+    "QSZJE1": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金金额 1"
+    },
+    "QSZJE2": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金金额 2"
+    },
+    "QSZJE3": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金金额 3"
+    },
+    "QSJSFS": {
+     "type": "Character",
+     "length": 1,
+     "desc": "交收方式"
+    },
+    "QSCJRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "成交日期；CCYYMMDD"
+    },
+    "QSQSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "清算日期；CCYYMMDD"
+    },
+    "QSJSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "交收日期；CCYYMMDD"
+    },
+    "QSFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "QSZQDM2": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码 2；保留字段"
+    },
+    "QSTGDY2": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元 2；保留字段"
+    },
+    "QSFJSM": {
+     "type": "Character",
+     "length": 30,
+     "desc": "附加说明；辅助信息"
+    },
+    "QSBYZD": {
+     "type": "Character",
+     "length": 20,
+     "desc": "备用字段；保留字段"
+    },
+    "QSBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；参与人系统自用"
+    }
+   }
+  },
+  "sjszj": {
+   "name": "资金变动库",
+   "page": 206,
+   "file_pattern": "SJSZJmmdd.DBF",
+   "fields": {
+    "ZJZJZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "资金账户"
+    },
+    "ZJYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "ZJLSH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "资金流水号"
+    },
+    "ZJFSJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "发生金额"
+    },
+    "ZJTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "ZJZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "ZJJZRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "记账日期；CCYYMMDD"
+    },
+    "ZJBZSM": {
+     "type": "Character",
+     "length": 60,
+     "desc": "备注说明"
+    },
+    "ZJBYZD": {
+     "type": "Character",
+     "length": 60,
+     "desc": "备用字段"
+    },
+    "ZJBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  },
+  "sjsye": {
+   "name": "资金余额信息库",
+   "page": 214,
+   "file_pattern": "SJSYEmmdd.DBF",
+   "fields": {
+    "YEZJZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "资金账户"
+    },
+    "YEDQYE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "当日资金余额"
+    },
+    "YEZDBF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "最低备付额度"
+    },
+    "YEKTZJ": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "可提资金额"
+    },
+    "YEDSFE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "待收付金额"
+    },
+    "YEDBJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "担保交收净额"
+    },
+    "YEXGSG": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "新股申购金额"
+    },
+    "YEFYF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "非担保交收应付金额"
+    },
+    "YEFYS": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "非担保交收应收金额"
+    },
+    "YEDYF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "代收代付应付资金"
+    },
+    "YEDYS": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "代收代付应收资金"
+    },
+    "YEFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "YEBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    },
+    "YEBYJE1": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "备用金额 1；备用字段"
+    },
+    "YEBYJE2": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "备用金额 2；备用字段"
+    },
+    "YEBYJE3": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "备用金额 3；备用字段"
+    },
+    "YEBYJE4": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "备用金额 4；备用字段"
+    },
+    "YEBYJE5": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "备用金额 5；备用字段"
+    },
+    "YEBYSZ1": {
+     "type": "Numeric",
+     "length": "17,4",
+     "desc": "备用数字 1；备用字段"
+    },
+    "YEBYSZ2": {
+     "type": "Numeric",
+     "length": "17,4",
+     "desc": "备用数字 2；备用字段"
+    }
+   }
+  },
+  "sjsjx": {
+   "name": "季度结息库",
+   "page": 216,
+   "file_pattern": "SJSJXmmdd.DBF",
+   "fields": {
+    "JXZJZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "资金账户"
+    },
+    "JXYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别；ZJJX：结息"
+    },
+    "JXFSJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "发生金额"
+    },
+    "JXJXZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "结息账户"
+    },
+    "JXJXJS": {
+     "type": "Numeric",
+     "length": "20,2",
+     "desc": "结息积数"
+    },
+    "JXJSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "记账日期；CCYYMMDD"
+    },
+    "JXBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  },
+  "sjstj": {
+   "name": "证券交易统计库",
+   "page": 216,
+   "file_pattern": "SJSTJmmdd.DBF",
+   "fields": {
+    "TJTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "TJZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "TJMRSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "买入股份数量"
+    },
+    "TJMRBJ": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "买入本金金额"
+    },
+    "TJMCSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "卖出股份数量"
+    },
+    "TJMCBJ": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖出本金金额"
+    },
+    "TJBJYJSF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "买交易经手费"
+    },
+    "TJSJYJSF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖交易经手费"
+    },
+    "TJBYHS": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "买印花税"
+    },
+    "TJSYHS": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖印花税"
+    },
+    "TJBGHF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "买过户费"
+    },
+    "TJSGHF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖过户费"
+    },
+    "TJBJSF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "买结算费"
+    },
+    "TJSJSF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖结算费"
+    },
+    "TJBJGGF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "买监管规费"
+    },
+    "TJSJGGF": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖监管规费"
+    },
+    "TJCJRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "成交日期；CCYYMMDD"
+    },
+    "TJBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  },
+  "sjsdpc": {
+   "name": "多批次交收结果库",
+   "page": 217,
+   "file_pattern": "SJSDPCmmdd.DBF",
+   "fields": {
+    "DPCJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "DPCBFZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "备付金账户"
+    },
+    "DPCJSZT": {
+     "type": "Character",
+     "length": 1,
+     "desc": "解锁状态；“N”：未解锁“0”：日初无可售交收锁定“1”：第一批次解锁“2”：第二批次解锁“3”：第三批次解锁"
+    },
+    "DPCFSPC": {
+     "type": "Character",
+     "length": 1,
+     "desc": "发送批次；“1”：第一批次“2”：第二批次“3”：第三批次"
+    },
+    "DPCFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    }
+   }
+  },
+  "sjsfw": {
+   "name": "综合数据服务库",
+   "page": 218,
+   "file_pattern": "SJSFWmmdd.DBF",
+   "fields": {
+    "FWSJLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "数据类别"
+    },
+    "FWJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "FWBFZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "备付金账户"
+    },
+    "FWTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "FWZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "FWZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户"
+    },
+    "FWGFXZ": {
+     "type": "Character",
+     "length": 2,
+     "desc": "股份性质"
+    },
+    "FWLTLX": {
+     "type": "Character",
+     "length": 1,
+     "desc": "流通类型"
+    },
+    "FWMRJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "买入金额"
+    },
+    "FWMCJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "卖出金额"
+    },
+    "FWZJYE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金余额"
+    },
+    "FWSL1": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "数量 1"
+    },
+    "FWSL2": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "数量 2"
+    },
+    "FWCLRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "处理日期；CCYYMMDD"
+    },
+    "FWFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "FWZYSM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "摘要说明"
+    },
+    "FWBZSM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "备注说明"
+    },
+    "FWBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志"
+    }
+   }
+  },
+  "sjsgb": {
+   "name": "广播类信息库",
+   "page": 225,
+   "file_pattern": "SJSGBmmdd.DBF",
+   "fields": {
+    "GBLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "广播类别"
+    },
+    "GBDM1": {
+     "type": "Character",
+     "length": 10,
+     "desc": "代码 1"
+    },
+    "GBDM2": {
+     "type": "Character",
+     "length": 20,
+     "desc": "代码 2"
+    },
+    "GBDM3": {
+     "type": "Character",
+     "length": 30,
+     "desc": "代码 3"
+    },
+    "GBSL": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "数量"
+    },
+    "GBRQ1": {
+     "type": "Character",
+     "length": 8,
+     "desc": "日期 1；CCYYMMDD"
+    },
+    "GBRQ2": {
+     "type": "Character",
+     "length": 8,
+     "desc": "日期 2；CCYYMMDD"
+    },
+    "GBBL": {
+     "type": "Numeric",
+     "length": "19,13",
+     "desc": "比例"
+    },
+    "GBJE1": {
+     "type": "Numeric",
+     "length": "18,3",
+     "desc": "金额 1"
+    },
+    "GBJE2": {
+     "type": "Numeric",
+     "length": "18,3",
+     "desc": "金额 2"
+    },
+    "GBZD": {
+     "type": "Character",
+     "length": 100,
+     "desc": "广播字段"
+    },
+    "GBBZ1": {
+     "type": "Character",
+     "length": 1,
+     "desc": "标志 1"
+    },
+    "GBBZ2": {
+     "type": "Character",
+     "length": 1,
+     "desc": "标志 2"
+    },
+    "GBBZSM": {
+     "type": "Character",
+     "length": 100,
+     "desc": "备注说明"
+    },
+    "GBSL2": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "数量 2；备用"
+    },
+    "GBBL2": {
+     "type": "Numeric",
+     "length": "19,13",
+     "desc": "比例 2；备用"
+    },
+    "GBRQ3": {
+     "type": "Character",
+     "length": 8,
+     "desc": "日期 3；备用"
+    },
+    "GBRQ4": {
+     "type": "Character",
+     "length": 8,
+     "desc": "日期 4；备用"
+    },
+    "GBRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "广播日期；CCYYMMDD"
+    }
+   }
+  },
+  "szyctz": {
+   "name": "临时停市延迟清算数据通知库（字段沿用SJSMX，仅临时停市发送）",
+   "page": 229,
+   "file_pattern": "SZYCTZmmdd.DBF",
+   "fields": {
+    "MXJSZH": {
+     "type": "Character",
+     "length": 6,
+     "desc": "结算账号"
+    },
+    "MXBFZH": {
+     "type": "Character",
+     "length": 25,
+     "desc": "备付金账户"
+    },
+    "MXSJLX": {
+     "type": "Character",
+     "length": 2,
+     "desc": "数据类型"
+    },
+    "MXYWLB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "业务类别"
+    },
+    "MXZQDM": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码"
+    },
+    "MXJYDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "交易单元"
+    },
+    "MXTGDY": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元"
+    },
+    "MXZQZH": {
+     "type": "Character",
+     "length": 20,
+     "desc": "证券账户号码"
+    },
+    "MXDDBH": {
+     "type": "Character",
+     "length": 24,
+     "desc": "客户订单编号/申请单号"
+    },
+    "MXYYB": {
+     "type": "Character",
+     "length": 4,
+     "desc": "营业部代码"
+    },
+    "MXZXBH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "执行编号"
+    },
+    "MXYWLSH": {
+     "type": "Character",
+     "length": 16,
+     "desc": "业务流水号"
+    },
+    "MXCJSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "成交数量"
+    },
+    "MXQSSL": {
+     "type": "Numeric",
+     "length": "15,2",
+     "desc": "清算数量"
+    },
+    "MXCJJG": {
+     "type": "Numeric",
+     "length": "13,4",
+     "desc": "成交价格"
+    },
+    "MXQSJG": {
+     "type": "Numeric",
+     "length": "18,9",
+     "desc": "清算价格"
+    },
+    "MXXYJY": {
+     "type": "Character",
+     "length": 1,
+     "desc": "信用交易标识"
+    },
+    "MXPCBS": {
+     "type": "Character",
+     "length": 1,
+     "desc": "平仓标识"
+    },
+    "MXZQLB": {
+     "type": "Character",
+     "length": 2,
+     "desc": "证券类别"
+    },
+    "MXZQZL": {
+     "type": "Character",
+     "length": 2,
+     "desc": "证券子类别"
+    },
+    "MXGFXZ": {
+     "type": "Character",
+     "length": 2,
+     "desc": "股份性质"
+    },
+    "MXJSFS": {
+     "type": "Character",
+     "length": 1,
+     "desc": "交收方式"
+    },
+    "MXHBDH": {
+     "type": "Character",
+     "length": 3,
+     "desc": "货币代号"
+    },
+    "MXQSBJ": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "清算本金"
+    },
+    "MXYHS": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "印花税"
+    },
+    "MXJYJSF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "交易经手费"
+    },
+    "MXJGGF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "监管规费"
+    },
+    "MXGHF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "过户费"
+    },
+    "MXJSF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "结算费"
+    },
+    "MXSXF": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "手续费"
+    },
+    "MXQSYJ": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "结算参与人佣金；结算参与人系统自用"
+    },
+    "MXQTFY": {
+     "type": "Numeric",
+     "length": "12,2",
+     "desc": "其他费用"
+    },
+    "MXZJJE": {
+     "type": "Numeric",
+     "length": "17,2",
+     "desc": "资金金额"
+    },
+    "MXSFJE": {
+     "type": "Numeric",
+     "length": "18,2",
+     "desc": "收付净额"
+    },
+    "MXCJRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "成交日期；CCYYMMDD"
+    },
+    "MXQSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "清算日期；CCYYMMDD"
+    },
+    "MXJSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "交收日期；CCYYMMDD"
+    },
+    "MXFSRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "发送日期；CCYYMMDD"
+    },
+    "MXQTRQ": {
+     "type": "Character",
+     "length": 8,
+     "desc": "其它日期；CCYYMMDD"
+    },
+    "MXSCDM": {
+     "type": "Character",
+     "length": 2,
+     "desc": "市场代码；保留字段"
+    },
+    "MXJYFS": {
+     "type": "Character",
+     "length": 2,
+     "desc": "交易方式"
+    },
+    "MXZQDM2": {
+     "type": "Character",
+     "length": 8,
+     "desc": "证券代码 2"
+    },
+    "MXTGDY2": {
+     "type": "Character",
+     "length": 6,
+     "desc": "托管单元 2"
+    },
+    "MXDDBH2": {
+     "type": "Character",
+     "length": 16,
+     "desc": "订单编号 2；保留字段"
+    },
+    "MXCWDH": {
+     "type": "Character",
+     "length": 4,
+     "desc": "错误代号"
+    },
+    "MXPPHM": {
+     "type": "Character",
+     "length": 10,
+     "desc": "匹配号码；备用"
+    },
+    "MXFJSM": {
+     "type": "Character",
+     "length": 30,
+     "desc": "附加说明"
+    },
+    "MXBYBZ": {
+     "type": "Character",
+     "length": 1,
+     "desc": "备用标志；结算参与人系统自用"
+    }
+   }
+  }
+ }
+}
